@@ -1,0 +1,52 @@
+{
+    "nav": {
+        "home": "Ana Sayfa",
+        "archive": "Arşiv",
+        "quizzes": "Testler",
+        "about": "Hakkımızda",
+        "privacy": "Gizlilik"
+    },
+    "hero": {
+        "title": "Merak Özgürlüktür",
+        "subtitle": "Bilimden teknolojiye, psikolojiden spora; zihnini açacak ve ufkunu genişletecek içerikler burada.",
+        "cta": "Keşfetmeye Başla"
+    },
+    "blog": {
+        "latest": "Son Yazılar",
+        "search": "Yazılarda Ara...",
+        "readTime": "dk okuma",
+        "related": "İlgili Yazılar",
+        "share": "Paylaş",
+        "comments": "Yorumlar",
+        "category": "Kategori",
+        "categorySubtitle": "Bu alandaki en yeni makaleleri keşfedin.",
+        "readMore": "Devamını Oku",
+        "weeklyEdition": "Haftalık Bülten",
+        "categories": {
+            "science": "Bilim",
+            "sport": "Spor",
+            "psychology": "Psikoloji",
+            "travel": "Seyahat",
+            "technology": "Teknoloji"
+        }
+    },
+    "newsletter": {
+        "title": "Bültenimize Katılın",
+        "subtitle": "Yeni makalelerden ve keşiflerden ilk siz haberdar olun.",
+        "email": "E-posta adresiniz",
+        "button": "Kayıt Ol",
+        "success": "Başarıyla kayıt oldunuz!",
+        "privacy": "Spam yok. İstediğiniz zaman abonelikten çıkabilirsiniz."
+    },
+    "footer": {
+        "rights": "Tüm Hakları Saklıdır.",
+        "mission": "Sınırları zorlayan, merak uyandıran içerikler."
+    },
+    "cookies": {
+        "title": "Gizliliğinize önem veriyoruz",
+        "description": "Deneyiminizi geliştirmek, kişiselleştirilmiş içerik sunmak ve trafiğimizi analiz etmek için çerezleri kullanıyoruz. 'Hepsini Kabul Et' seçeneğine tıklayarak çerez kullanımımıza izin vermiş olursunuz.",
+        "policy": "Daha Fazla Bilgi",
+        "accept": "Hepsini Kabul Et",
+        "decline": "Hepsini Reddet"
+    }
+}
