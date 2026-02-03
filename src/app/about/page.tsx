@@ -28,8 +28,8 @@ export default function AboutPage() {
             {/* Image Break */}
             <div className="w-full h-[400px] md:h-[600px] relative mb-24 overflow-hidden">
                 <Image
-                    src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000"
-                    alt="Kion Mission - Space"
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2000"
+                    alt="Kion Editorial Team"
                     fill
                     className="object-cover"
                 />
@@ -74,19 +74,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Team / Contact CTA */}
-            <section className="bg-stone-100 dark:bg-stone-900 py-24 mb-0">
-                <div className="container mx-auto px-6 text-center max-w-2xl">
-                    <h2 className="text-3xl font-serif font-bold mb-6">Join the Conversation</h2>
-                    <p className="text-muted-foreground mb-8">
-                        Have a topic you want us to explore? Or just want to say hi?
-                        We are a small, passionate team and we read every email.
-                    </p>
-                    <a href="mailto:hello@kion.com" className="inline-block px-8 py-4 bg-brand-primary text-white font-bold rounded-full hover:bg-brand-secondary transition-colors shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-200">
-                        Get in Touch
-                    </a>
-                </div>
-            </section>
+
         </div>
     );
 }
