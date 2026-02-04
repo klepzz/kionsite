@@ -188,7 +188,7 @@ export default async function BlogPostPage({
                 }}
             />
 
-            <main className="pb-24 pt-28 relative">
+            <main className="pb-24 pt-32 relative">
                 {/* Tables of Interactivity */}
                 <Reactions slug={post.slug} />
 
