@@ -51,7 +51,7 @@ export default function TableOfContents({ content }: { content: string }) {
     if (headings.length === 0) return null;
 
     return (
-        <div className="sticky top-32 hidden xl:block w-64 -ml-[350px] mb-8">
+        <div className="">
             <div className="flex items-center gap-2 mb-6 text-stone-900 dark:text-stone-50">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-brand-primary"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
                 <h2 className="text-sm font-black uppercase tracking-widest opacity-80">On this page</h2>
