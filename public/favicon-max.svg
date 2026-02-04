@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 
+    Standard favicons are 32x32.
+    We set x="-1" y="1" and width="34" height="34" to slightly 'overfill' the 32x32 viewbox.
+    This forces the browser to render the logo at the absolute physical limit of the tab's icon area.
+    The y="1" provides that 'downward' nudge the user is looking for.
+  -->
+  <image href="/sphere-logo-trans.png" x="-1" y="1" width="34" height="34" preserveAspectRatio="xMidYMid slice" />
+</svg>

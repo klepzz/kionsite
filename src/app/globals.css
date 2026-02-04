@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+
+
+:root {
+  /* Warm / Organic Light Mode (Mocha & Honey based) */
+  --background: #fdfaf6;
+  /* Warm cream */
+  --foreground: #2d241e;
+  /* Deep mocha */
+
+  --card: #ffffff;
+  --card-foreground: #2d241e;
+
+  --muted: #f3ece4;
+  /* Soft sand */
+  --muted-foreground: #7c6f64;
+  /* Taupe */
+
+  --border: #e8dfd5;
+  /* Light clay */
+}
+
+.dark {
+  /* "Low Light" Dark Mode (Deep Charcoal & Soft Gold) */
+  --background: #141211;
+  /* Warm black */
+  --foreground: #e6ddd3;
+  /* Soft parchment */
+
+  --card: #1c1a19;
+  /* Deep mocha-black */
+  --card-foreground: #e6ddd3;
+
+  --muted: #24211f;
+  /* Burnt umber */
+  --muted-foreground: #a3968b;
+  /* Muted stone */
+
+  --border: #2a2725;
+}
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  /* New Brand Colors: Forest & Honey (Refined for 2025) */
+  --color-brand-primary: #1b4332;
+  /* Deep forest green */
+  --color-brand-secondary: #d4a373;
+  /* Honey gold */
+  --color-brand-accent: #bc6c25;
+  /* Earthy orange */
+
+  /* Category Colors (Earthy & Harmonious) */
+  --color-cat-science: #457b9d;
+  --color-cat-sport: #c1121f;
+  --color-cat-psychology: #606c38;
+  --color-cat-travel: #2a9d8f;
+  --color-cat-technology: #3a506b;
+}
+
+/* Global Typography Overrides for the 'Editorial' feel */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.025em;
+}
+
+/* Custom Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Enforcing Smooth Scroll & Navbar Offset */
+html {
+  scroll-behavior: smooth !important;
+  scroll-padding-top: 100px;
+  /* Accounts for fixed navbar height */
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.page-transition-wrapper {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+.hover-shine:hover::after {
+  left: 120%;
+}
+
+/* Glossary Tooltips */
+.glossary-term {
+  @apply cursor-help border-b-2 border-dotted border-brand-secondary/40 transition-colors relative inline-block;
+}
+
+.glossary-term:hover {
+  @apply border-brand-secondary text-brand-secondary;
+}
+
+.glossary-term::after {
+  content: attr(data-definition);
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-4 z-50 rounded-2xl bg-white dark:bg-stone-900 border border-border shadow-2xl text-[11px] text-muted-foreground opacity-0 pointer-events-none transition-all duration-300 scale-95 leading-relaxed text-center;
+}
+
+.glossary-term:hover::after {
+  @apply opacity-100 scale-100;
+}
+
+.glossary-term::before {
+  content: "DEFINITION: " attr(data-term);
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-[calc(100%+1rem)] z-[60] text-[9px] font-black uppercase tracking-widest text-brand-secondary opacity-0 pointer-events-none transition-all duration-300;
+}

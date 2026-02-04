@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 
+    We use the sphere logo but scale it up (width/height > 32) 
+    and nudge it down (y > 0) to meet the user's request.
+    Using x="-2" y="2" and width="36" height="36" to make it "burst" out of the standard 32x32 box slightly
+    and sit lower in the browser tab's visual line.
+  -->
+  <image href="/sphere-logo-trans.png" x="-2" y="2" width="36" height="36" />
+</svg>

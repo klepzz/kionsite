@@ -1,0 +1,52 @@
+{
+    "nav": {
+        "home": "Home",
+        "archive": "Discover",
+        "quizzes": "Quizzes",
+        "about": "About",
+        "privacy": "Privacy"
+    },
+    "hero": {
+        "title": "Curiosity is Freedom",
+        "subtitle": "From science to technology, psychology to sport; content to open your mind and expand your horizons.",
+        "cta": "Start Exploring"
+    },
+    "blog": {
+        "latest": "Latest Posts",
+        "search": "Search posts...",
+        "readTime": "min read",
+        "related": "Related Posts",
+        "share": "Share",
+        "comments": "Comments",
+        "category": "Category",
+        "categorySubtitle": "Discover the latest articles in this field.",
+        "readMore": "Read More",
+        "weeklyEdition": "Weekly Edition",
+        "categories": {
+            "science": "Science",
+            "sport": "Sport",
+            "psychology": "Psychology",
+            "travel": "Travel",
+            "technology": "Technology"
+        }
+    },
+    "newsletter": {
+        "title": "Join Our Newsletter",
+        "subtitle": "Be the first to know about new articles and discoveries.",
+        "email": "Your email address",
+        "button": "Subscribe",
+        "success": "Successfully subscribed!",
+        "privacy": "No spam. Unsubscribe at any time."
+    },
+    "footer": {
+        "rights": "All Rights Reserved.",
+        "mission": "Content that pushes boundaries and sparks curiosity."
+    },
+    "cookies": {
+        "title": "We value your privacy",
+        "description": "We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies.",
+        "policy": "Learn More",
+        "accept": "Accept All",
+        "decline": "Reject All"
+    }
+}
