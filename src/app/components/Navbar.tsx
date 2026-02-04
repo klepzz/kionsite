@@ -13,6 +13,7 @@ export default function Navbar() {
     const { t } = useLanguage();
     const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Handle scroll effect for glassmorphism intensity
     useEffect(() => {
@@ -102,7 +103,11 @@ export default function Navbar() {
 
                         {/* Mobile Menu Toggle (Simplified) */}
                         <div className="lg:hidden">
-                            <button className="p-2.5 rounded-xl text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all">
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="p-2.5 rounded-xl text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all"
+                                aria-label="Toggle Mobile Menu"
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                 </svg>
@@ -111,6 +116,31 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {mobileMenuOpen && (
+                <div className="lg:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl">
+                    <div className="mx-auto max-w-7xl px-6 py-4 space-y-2">
+                        {navItems.map((item) => {
+                            const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
+
+                            return (
+                                <Link
+                                    key={item.path}
+                                    href={item.path}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={`block px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${isActive
+                                            ? "text-emerald-700 dark:text-emerald-400 bg-muted shadow-sm"
+                                            : "text-foreground hover:text-brand-primary hover:bg-muted/50"
+                                        }`}
+                                >
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }
