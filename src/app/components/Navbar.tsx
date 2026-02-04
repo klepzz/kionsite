@@ -36,7 +36,7 @@ export default function Navbar() {
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b
             ${scrolled
                     ? "bg-background/80 backdrop-blur-xl border-border/40 h-20"
-                    : "bg-background/0 backdrop-blur-none border-transparent h-24"
+                    : "bg-background/0 backdrop-blur-none border-transparent h-24 max-h-24"
                 }`}
         >
             <div className="mx-auto max-w-7xl px-6 h-full">
