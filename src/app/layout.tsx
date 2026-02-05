@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -8,6 +7,7 @@ import { LanguageProvider } from "../context/LanguageContext";
 import Footer from "./components/Footer";
 import CookieBanner from "./components/CookieBanner";
 import ReadingProgressBar from "./components/ReadingProgressBar";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 // Editorial Fonts
 const playfair = Playfair_Display({
@@ -81,19 +81,7 @@ export default function RootLayout({
         {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
       </head>
       <body className={`${playfair.variable} ${lato.variable} antialiased`}>
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-Q6GJDBXT69"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-Q6GJDBXT69');
-          `}
-        </Script>
+        <GoogleAnalytics gaId="G-Q6GJDBXT69" />
         <ThemeProvider>
           <LanguageProvider>
             <div className="page-transition-wrapper min-h-screen flex flex-col">
