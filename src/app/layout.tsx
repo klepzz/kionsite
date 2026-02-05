@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -86,6 +87,7 @@ export default function RootLayout({
               <ReadingProgressBar />
               {children}
               <Analytics />
+              <GoogleAnalytics gaId="G-Q6GJDBXT69" />
               <Footer />
               <CookieBanner />
             </div>
