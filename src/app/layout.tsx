@@ -77,7 +77,11 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        {/* Google Analytics - v2 */}
+        {/* Google AdSense - Placeholder (Replace with your own client ID) */}
+        {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
+      </head>
+      <body className={`${playfair.variable} ${lato.variable} antialiased`}>
+        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-Q6GJDBXT69"
           strategy="afterInteractive"
@@ -90,10 +94,6 @@ export default function RootLayout({
             gtag('config', 'G-Q6GJDBXT69');
           `}
         </Script>
-        {/* Google AdSense - Placeholder (Replace with your own client ID) */}
-        {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
-      </head>
-      <body className={`${playfair.variable} ${lato.variable} antialiased`}>
         <ThemeProvider>
           <LanguageProvider>
             <div className="page-transition-wrapper min-h-screen flex flex-col">
