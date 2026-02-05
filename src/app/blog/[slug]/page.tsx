@@ -212,7 +212,7 @@ export default async function BlogPostPage({
                         >
                             {categoryLabels[post.category]}
                         </span>
-                        <h1 className="mt-4 text-3xl font-extrabold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+                        <h1 className="mt-0 text-3xl font-extrabold leading-tight text-foreground sm:text-4xl lg:text-5xl">
                             {post.title}
                         </h1>
                         <div className="mt-4 flex items-center justify-center gap-4 text-sm text-muted-foreground">

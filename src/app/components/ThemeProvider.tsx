@@ -22,8 +22,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") as Theme;
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        const initialTheme = savedTheme || systemTheme;
+        // Always default to light mode instead of system preference
+        const initialTheme = savedTheme || "light";
 
         const timer = setTimeout(() => {
             setTheme(initialTheme);
