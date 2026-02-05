@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { LanguageProvider } from "../context/LanguageContext";
 import Footer from "./components/Footer";
@@ -90,6 +91,7 @@ export default function RootLayout({
           </LanguageProvider>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
     </html>
   );
 }
