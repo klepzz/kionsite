@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -81,20 +82,9 @@ export default function RootLayout({
         {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
       </head>
       <body className={`${playfair.variable} ${lato.variable} antialiased`}>
-        {/* Direct Google Analytics Injection - v4 (Final Attempt) */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-Q6GJDBXT69"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-Q6GJDBXT69');
-          `}
-        </Script>
-        <div id="ga-debug-marker-v4" style={{ display: 'none' }} data-status="active" />
+        {/* Force Inject Google Analytics */}
+        <GoogleAnalytics gaId="G-Q6GJDBXT69" />
+
         <ThemeProvider>
           <LanguageProvider>
             <div className="page-transition-wrapper min-h-screen flex flex-col">
