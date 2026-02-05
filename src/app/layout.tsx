@@ -77,7 +77,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        {/* Google Analytics */}
+        {/* Google Analytics - v2 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-Q6GJDBXT69"
           strategy="afterInteractive"
