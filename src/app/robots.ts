@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/private/',
         },
-        sitemap: 'https://kion-blog.vercel.app/sitemap.xml',
+        sitemap: 'https://kion.online/sitemap.xml',
     };
 }

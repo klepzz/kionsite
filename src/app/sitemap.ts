@@ -3,7 +3,7 @@ import { allPosts } from '@/lib/posts';
 import { allTests } from '@/lib/tests'; // Added import
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://kion-blog.vercel.app'; // Örnek URL, kullanıcı değiştirebilir
+    const baseUrl = 'https://kion.online';
 
     // Home, About, Tests, etc.
     const staticPages = [

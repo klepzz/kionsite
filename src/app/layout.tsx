@@ -24,7 +24,7 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kion-blog.vercel.app"),
+  metadataBase: new URL("https://kion.online"),
   title: {
     default: "Kion | Curiosity is Freedom",
     template: "%s | Kion Blog"
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://kion-blog.vercel.app",
+    url: "https://kion.online",
     siteName: "Kion Blog",
     title: "Kion | Curiosity is Freedom",
     description: "Explore a curated collection of stories from the frontiers of science and technology.",
@@ -76,6 +76,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="google-site-verification" content="b4rERCkqyZSjFV8wEUKimzxP0dt2tQOzEJUskPgsR0U" />
         {/* Google AdSense - Placeholder (Replace with your own client ID) */}
         {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
       </head>
