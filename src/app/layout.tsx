@@ -91,7 +91,7 @@ export default function RootLayout({
           </LanguageProvider>
         </ThemeProvider>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+      <GoogleAnalytics gaId="G-Q6GJDBXT69" />
     </html>
   );
 }
