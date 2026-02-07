@@ -77,8 +77,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="google-site-verification" content="wDCeoCkrxQ2FFg7cGuPhBYtQELxkekzSVkhxGc2Tpbg" />
-        {/* Google AdSense - Placeholder (Replace with your own client ID) */}
-        {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7064706669437252" crossOrigin="anonymous"></script>
       </head>
       <body className={`${playfair.variable} ${lato.variable} antialiased`}>
         <ThemeProvider>
