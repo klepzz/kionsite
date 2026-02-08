@@ -430,7 +430,6 @@ export default function CodenamesPage() {
                                 {isHost && (
                                     <button
                                         onClick={startGame}
-                                        disabled={setejelerPlayers.length === 0 || aveketlerPlayers.length === 0}
                                         className="px-12 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl font-black text-xl shadow-lg hover:shadow-emerald-500/30 disabled:opacity-30 disabled:grayscale transition-all flex items-center gap-3"
                                     >
                                         <Play className="w-6 h-6 fill-current" />
