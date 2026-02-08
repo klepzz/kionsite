@@ -732,266 +732,286 @@ export default function CodenamesPage() {
     const spymasterView = myPlayer?.role === 'SPYMASTER' || !!gameState.winner;
 
     return (
-        <div className={`min-h-screen font-sans transition-colors duration-1000 ${gameState.winner ? (gameState.winner === 'SETEJELER' ? TEAMS.SETEJELER.winBg : TEAMS.AVEKETLER.winBg) : 'bg-slate-950'} text-white`}>
+        <div className={`min-h-screen font-sans transition-colors duration-1000 ${gameState.winner ? (gameState.winner === 'SETEJELER' ? 'bg-orange-950' : 'bg-slate-950') : 'bg-gradient-to-b from-orange-400 to-orange-700'}`}>
 
-            {/* Top Bar */}
-            <div className="max-w-7xl mx-auto p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Texture Overlay */}
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none mix-blend-multiply" />
+
+            {/* Top Bar (Compact) */}
+            <div className="relative z-10 max-w-[1920px] mx-auto p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Link href="/games" className="text-white/50 hover:text-white transition-colors">
-                        <ArrowLeft className="w-6 h-6" />
+                    <Link href="/games" className="text-white/70 hover:text-white transition-colors bg-black/20 p-2 rounded-full backdrop-blur-sm">
+                        <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <span className="font-cinzel font-black text-2xl tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-amber-100 to-amber-400 drop-shadow-sm">
-                        KION NAMES
-                    </span>
-                </div>
-
-                {/* Scoreboard */}
-                <div className="flex items-center gap-8 bg-slate-900/80 px-8 py-3 rounded-2xl border border-slate-800 shadow-2xl backdrop-blur-md">
-                    <div className={`flex flex-col items-center transition-opacity ${gameState.currentTurn === 'SETEJELER' ? 'opacity-100 scale-110' : 'opacity-50'}`}>
-                        <span className="text-[10px] font-black tracking-[0.2em] text-orange-500 mb-1">SETEJELER</span>
-                        <span className="text-4xl font-black text-white leading-none">{setejelerLeft}</span>
-                    </div>
-                    <div className="h-10 w-px bg-slate-700 mx-2" />
-                    <div className={`flex flex-col items-center transition-opacity ${gameState.currentTurn === 'AVEKETLER' ? 'opacity-100 scale-110' : 'opacity-50'}`}>
-                        <span className="text-[10px] font-black tracking-[0.2em] text-cyan-500 mb-1">AVEKETLER</span>
-                        <span className="text-4xl font-black text-white leading-none">{aveketlerLeft}</span>
-                    </div>
-                </div>
-
-                <div>
                     {isHost && (
-                        <button onClick={() => startGame()} className="p-2 hover:bg-slate-800 rounded-lg text-slate-500 hover:text-white transition-colors">
+                        <button onClick={() => startGame()} className="p-2 hover:bg-black/20 rounded-full text-white/70 hover:text-white transition-colors backdrop-blur-sm" title="Yeniden Başlat">
                             <RefreshCcw className="w-5 h-5" />
                         </button>
                     )}
                 </div>
+
+                {/* Status Message / Title */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center">
+                    <h1 className="font-cinzel font-black text-3xl md:text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] tracking-wide uppercase">
+                        {gameState.winner ? `${gameState.winner} KAZANDI!` :
+                            gameState.turnPhase === 'CLUE' ? `${gameState.currentTurn} İPUCU BEKLENİYOR` :
+                                `${gameState.currentTurn} TAHMİN EDİYOR`}
+                    </h1>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button className="bg-black/20 text-white px-4 py-2 rounded-full font-bold backdrop-blur-sm hover:bg-black/30 transition-colors">
+                        Ayarlar
+                    </button>
+                </div>
             </div>
 
-            {/* Game Controls & Info */}
-            <div className="max-w-2xl mx-auto px-4 py-4">
-                {/* CLUE DISPLAY */}
-                {gameState.turnPhase === 'GUESS' && gameState.currentClue && (
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        className={`relative flex flex-col md:flex-row items-center justify-between px-8 py-6 rounded-3xl border-2 shadow-2xl mb-8 overflow-hidden group ${gameState.currentTurn === 'SETEJELER'
-                                ? 'bg-gradient-to-r from-orange-950/90 to-slate-900 border-orange-500/50 shadow-orange-900/40'
-                                : 'bg-gradient-to-r from-cyan-950/90 to-slate-900 border-cyan-500/50 shadow-cyan-900/40'
-                            }`}
-                    >
-                        {/* Background Effect */}
-                        <div className={`absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay`} />
+            {/* Main Layout: 3 Columns */}
+            <div className="relative z-10 max-w-[1800px] mx-auto px-4 pb-8 flex flex-col lg:flex-row gap-8 h-[calc(100vh-100px)]">
 
-                        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 z-10">
-                            <div className="flex flex-col items-center md:items-start">
-                                <span className={`font-cinzel font-bold text-xs tracking-[0.3em] mb-1 ${gameState.currentTurn === 'SETEJELER' ? 'text-orange-400' : 'text-cyan-400'
-                                    }`}>
-                                    ANLATICI İPUCU
-                                </span>
-                                <div className="flex items-baseline gap-4">
-                                    <span className="font-cinzel font-black text-4xl md:text-5xl text-white drop-shadow-md">
-                                        {gameState.currentClue.word}
-                                    </span>
-                                    <span className={`px-4 py-1 rounded-full text-xl font-bold border ${gameState.currentTurn === 'SETEJELER'
-                                            ? 'bg-orange-500/20 text-orange-200 border-orange-500/30'
-                                            : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/30'
-                                        }`}>
-                                        {gameState.currentClue.number}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                {/* LEFT: AVEKETLER (Blue) - Operatives & Spymaster */}
+                <div className="w-full lg:w-80 flex flex-col gap-4 order-2 lg:order-1">
+                    {/* Score / Header */}
+                    <div className="bg-cyan-600 rounded-xl p-4 shadow-lg border-b-4 border-cyan-800 flex items-center justify-between">
+                        <h2 className="text-white font-black text-xl uppercase tracking-wider">AVEKETLER</h2>
+                        <span className="text-4xl font-black text-white bg-black/20 px-3 py-1 rounded-lg">{aveketlerLeft}</span>
+                    </div>
 
-                        {/* Controls */}
-                        {isMyTurn && myPlayer?.role === 'OPERATIVE' && (
-                            <div className="flex items-center gap-6 mt-4 md:mt-0 z-10 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
-                                <div className="text-center">
-                                    <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">KALAN HAK</span>
-                                    <span className="font-mono text-2xl font-bold text-white">{gameState.guessesRemaining}</span>
+                    {/* Operatives Panel */}
+                    <div className="flex-1 bg-cyan-900/40 backdrop-blur-sm rounded-xl border-2 border-cyan-500/30 p-4 flex flex-col">
+                        <h3 className="text-cyan-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-cyan-500/30 pb-1">AJANLAR</h3>
+                        <div className="flex-1 space-y-2 overflow-y-auto">
+                            {aveketlerPlayers.filter(p => p.role === 'OPERATIVE').map(p => (
+                                <div key={p.id} className="flex items-center gap-2 text-white bg-cyan-800/50 p-2 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
+                                    <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
-                                <button
-                                    onClick={() => isHost ? passTurn() : sendToHost('END_TURN')}
-                                    className="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-red-500/20 flex items-center gap-2 group/pass"
-                                >
-                                    <span>PAS GEÇ</span>
-                                    <ChevronRight className="w-4 h-4 group-hover/pass:translate-x-1 transition-transform" />
+                            ))}
+                            {myPlayer?.team === 'AVEKETLER' && myPlayer.role !== 'OPERATIVE' && (
+                                <button onClick={() => selectRole('OPERATIVE')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-2">
+                                    AJAN OL
                                 </button>
-                            </div>
-                        )}
-                    </motion.div>
-                )}
-
-                {/* SPYMASTER INPUT */}
-                {isMyTurn && myPlayer?.role === 'SPYMASTER' && gameState.turnPhase === 'CLUE' && (
-                    <div className="bg-slate-900 px-6 py-4 rounded-2xl border border-slate-700 shadow-xl mb-6 flex flex-col items-center gap-4">
-                        <h3 className="text-slate-400 font-bold text-sm uppercase tracking-widest">İPUCU VER</h3>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                const form = e.target as HTMLFormElement;
-                                const word = (form.elements.namedItem('word') as HTMLInputElement).value;
-                                const number = parseInt((form.elements.namedItem('number') as HTMLInputElement).value);
-                                if (word && number) {
-                                    if (isHost) processClue(word, number);
-                                    else sendToHost('GIVE_CLUE', { word, number });
-                                }
-                            }}
-                            className="flex gap-2 w-full"
-                        >
-                            <input
-                                name="word"
-                                type="text"
-                                placeholder="Kelime..."
-                                className="flex-1 bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 outline-none uppercase font-bold"
-                                autoComplete="off"
-                            />
-                            <select
-                                name="number"
-                                className="bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 outline-none font-bold"
-                            >
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <option key={n} value={n}>{n}</option>)}
-                            </select>
-                            <button
-                                type="submit"
-                                className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-xl font-bold transition-colors"
-                            >
-                                GÖNDER
-                            </button>
-                        </form>
+                            )}
+                        </div>
                     </div>
-                )}
 
-                {isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'CLUE' && (
-                    <div className="text-center text-slate-400 animate-pulse mb-6">
-                        Anlatıcının ipucu vermesi bekleniyor...
+                    {/* Spymaster Panel */}
+                    <div className="h-40 bg-cyan-900/40 backdrop-blur-sm rounded-xl border-2 border-cyan-500/30 p-4 flex flex-col">
+                        <h3 className="text-cyan-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-cyan-500/30 pb-1">ANLATICI</h3>
+                        <div className="flex-1 space-y-2 overflow-y-auto">
+                            {aveketlerPlayers.filter(p => p.role === 'SPYMASTER').map(p => (
+                                <div key={p.id} className="flex items-center gap-2 text-white bg-cyan-800/50 p-2 rounded-lg border border-cyan-400/50">
+                                    <Crown className="w-4 h-4 text-yellow-400" />
+                                    <span className="font-medium text-sm truncate">{p.name}</span>
+                                </div>
+                            ))}
+                            {myPlayer?.team === 'AVEKETLER' && myPlayer.role !== 'SPYMASTER' && (
+                                <button onClick={() => selectRole('SPYMASTER')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-auto">
+                                    ANLATICI OL
+                                </button>
+                            )}
+                        </div>
                     </div>
-                )}
-            </div>
+                </div>
 
-            {/* Turn Indicator or Game Over */}
-            <div className="flex justify-center my-6">
-                {gameState.winner ? (
-                    <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className={`px-10 py-6 rounded-3xl border-4 shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-slate-900/90 backdrop-blur-xl text-center z-50 ${gameState.winner === 'SETEJELER' ? 'border-orange-500 text-orange-500' : 'border-cyan-500 text-cyan-400'}`}
-                    >
-                        <h2 className="text-4xl md:text-6xl font-black uppercase mb-4 tracking-tight">
-                            {gameState.winner} KAZANDI!
-                        </h2>
-                        {isHost && (
-                            <button onClick={() => startGame()} className="bg-white text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors">
-                                YENİ OYUN
-                            </button>
-                        )}
-                    </motion.div>
-                ) : (
-                    <div className={`inline-flex items-center gap-4 px-8 py-3 rounded-full border shadow-2xl transition-all duration-500 ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'}`}>
-                        {isMyTurn && <span className="animate-pulse">👉</span>}
-                        <span className="font-bold tracking-widest text-lg">SIRA: {gameState.currentTurn}</span>
-                        {isMyTurn && <span className="text-xs bg-white/10 px-2 py-1 rounded ml-2">SENİN SIRAN</span>}
-                    </div>
-                )}
-            </div>
 
-            {/* Main Game Area: Logs + Grid */}
-            <div className="max-w-7xl mx-auto px-4 pb-20 flex flex-col-reverse lg:flex-row gap-6 h-[calc(100vh-300px)] min-h-[500px]">
+                {/* CENTER: Grid & Clue Area */}
+                <div className="flex-1 flex flex-col gap-6 order-1 lg:order-2">
 
-                {/* LOG PANEL */}
-                <div className="lg:w-80 flex flex-col bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden shadow-2xl h-full lg:h-auto max-h-[300px] lg:max-h-full">
-                    <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <h3 className="font-cinzel font-bold text-slate-300 tracking-wider text-sm">GÖREV KAYITLARI</h3>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-xs">
-                        {gameState.logs.length === 0 && (
-                            <div className="text-slate-600 text-center italic mt-10">Kayıt bekleniyor...</div>
-                        )}
-                        {gameState.logs.map(log => (
+                    {/* Clue Display (Compact & Elegant) */}
+                    <div className="h-24 flex items-center justify-center">
+                        {gameState.turnPhase === 'GUESS' && gameState.currentClue ? (
                             <motion.div
-                                key={log.id}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className={`p-3 rounded-lg border-l-2 ${log.type === 'SUCCESS' ? 'border-green-500 bg-green-500/10 text-green-200' :
-                                    log.type === 'DANGER' ? 'border-red-500 bg-red-500/10 text-red-200' :
-                                        log.type === 'WARNING' ? 'border-yellow-500 bg-yellow-500/10 text-yellow-200' :
-                                            'border-slate-500 bg-slate-500/10 text-slate-300'
+                                initial={{ y: -20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                className={`flex items-center gap-6 px-10 py-4 rounded-xl shadow-2xl border-b-4 ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-100 border-orange-600 text-orange-900' : 'bg-cyan-100 border-cyan-600 text-cyan-900'
                                     }`}
                             >
-                                <div className="flex justify-between opacity-50 text-[10px] mb-1">
-                                    <span>{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-                                </div>
-                                <div>{log.text}</div>
+                                <span className="font-cinzel font-bold text-lg uppercase tracking-widest opacity-60">İPUCU:</span>
+                                <span className="font-black text-4xl uppercase">{gameState.currentClue.word}</span>
+                                <span className={`w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-xl shadow-inner ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-600' : 'bg-cyan-600'
+                                    }`}>
+                                    {gameState.currentClue.number}
+                                </span>
                             </motion.div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* GRID */}
-                <div className="flex-1 bg-slate-900/30 rounded-3xl p-4 lg:p-6 border border-white/5 backdrop-blur-sm overflow-y-auto">
-                    <div className="grid grid-cols-5 gap-2 md:gap-3 lg:gap-4 h-full content-center">
-                        {gameState.cards.map((card, i) => {
-                            // Enhanced Card Styles
-                            let baseStyle = "aspect-[4/3] rounded-xl flex items-center justify-center p-1 md:p-2 text-center font-bold text-xs md:text-sm lg:text-lg uppercase transition-all duration-300 shadow-md select-none relative overflow-hidden group";
-
-                            // Typography
-                            const textStyle = "font-sans tracking-wide z-10 drop-shadow-md";
-
-                            if (card.revealed || spymasterView) {
-                                // AÇIK KART (veya Spymaster)
-                                const opacity = card.revealed ? "opacity-100 scale-100" : "opacity-60 saturate-[0.2] scale-[0.98]";
-
-                                if (card.type === 'SETEJELER') {
-                                    // Deep rich red-orange gradient
-                                    baseStyle += ` bg-gradient-to-br from-[#7f1d1d] to-[#c2410c] text-orange-50 border border-orange-500/30 shadow-[0_0_15px_rgba(234,88,12,0.3)] ${opacity}`;
-                                } else if (card.type === 'AVEKETLER') {
-                                    // Deep rich blue-cyan gradient
-                                    baseStyle += ` bg-gradient-to-br from-[#0c4a6e] to-[#0284c7] text-cyan-50 border border-cyan-500/30 shadow-[0_0_15px_rgba(2,132,199,0.3)] ${opacity}`;
-                                } else if (card.type === 'ASSASSIN') {
-                                    // Black with red danger pattern
-                                    baseStyle += ` bg-black text-red-500 border border-red-900/50 shadow-inner ${opacity}`;
-                                } else { // Neutral
-                                    // Warm beige/sand
-                                    baseStyle += ` bg-[#d6d3d1] text-[#44403c] border border-[#a8a29e] ${opacity}`;
-                                }
-                            } else {
-                                // KAPALI KART (Operative)
-                                baseStyle += " bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 hover:scale-[1.03] hover:shadow-xl hover:from-white hover:to-slate-200 cursor-pointer border-b-4 border-slate-400/50 active:border-b-0 active:translate-y-1";
-                                if (!isMyTurn || gameState.winner || gameState.turnPhase === 'CLUE' || myPlayer?.role === 'SPYMASTER') {
-                                    baseStyle += " cursor-not-allowed opacity-75 hover:scale-100 hover:from-slate-200 grayscale";
-                                }
-                            }
-
-                            // Tıklama engeli
-                            const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
-
-                            return (
-                                <motion.button
-                                    key={card.id}
-                                    layoutId={`card-${card.id}`}
-                                    onClick={() => canClick && handleCardClick(i)}
-                                    disabled={!canClick}
-                                    className={baseStyle}
-                                    whileTap={canClick ? { scale: 0.95 } : {}}
+                        ) : (
+                            isMyTurn && myPlayer?.role === 'SPYMASTER' && (
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const form = e.target as HTMLFormElement;
+                                        const word = (form.elements.namedItem('word') as HTMLInputElement).value;
+                                        const number = parseInt((form.elements.namedItem('number') as HTMLInputElement).value);
+                                        if (word && number) {
+                                            if (isHost) processClue(word, number);
+                                            else sendToHost('GIVE_CLUE', { word, number });
+                                        }
+                                    }}
+                                    className="flex gap-2 bg-black/40 p-2 rounded-xl backdrop-blur-md border border-white/10 shadow-xl"
                                 >
-                                    <span className={`${textStyle} ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-2' : ''}`}>
-                                        {card.word}
-                                    </span>
+                                    <input
+                                        name="word"
+                                        type="text"
+                                        placeholder="İPUCU KELİMESİ"
+                                        className="bg-white/90 border-0 rounded-lg px-4 py-2 text-slate-900 font-bold uppercase focus:ring-2 focus:ring-yellow-400 outline-none w-48 placeholder:text-slate-400"
+                                        autoComplete="off"
+                                    />
+                                    <select
+                                        name="number"
+                                        className="bg-white/90 border-0 rounded-lg px-2 py-2 text-slate-900 font-bold focus:ring-2 focus:ring-yellow-400 outline-none w-16 text-center"
+                                    >
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <option key={n} value={n}>{n}</option>)}
+                                    </select>
+                                    <button
+                                        type="submit"
+                                        className="bg-green-600 hover:bg-green-500 text-white px-6 rounded-lg font-bold uppercase tracking-wide transition-colors shadow-md"
+                                    >
+                                        VER
+                                    </button>
+                                </form>
+                            )
+                        )}
 
-                                    {/* Texture / Shine Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        {/* Pass Button Display for Operatives */}
+                        {isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS' && (
+                            <button
+                                onClick={() => isHost ? passTurn() : sendToHost('END_TURN')}
+                                className="ml-4 bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-bold uppercase shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition-all"
+                            >
+                                PAS GEÇ
+                            </button>
+                        )}
+                    </div>
 
-                                    {/* Inner Border for style */}
-                                    {!card.revealed && !spymasterView && (
-                                        <div className="absolute inset-1 border border-slate-400/30 rounded-lg pointer-events-none" />
-                                    )}
-                                </motion.button>
-                            );
-                        })}
+                    {/* CARD GRID */}
+                    <div className="flex-1 bg-black/20 p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner overflow-hidden">
+                        <div className="grid grid-cols-5 gap-3 md:gap-4 h-full content-center max-w-[900px] mx-auto">
+                            {gameState.cards.map((card, i) => {
+                                // 3D TILE STYLE
+                                const isRevealed = card.revealed || spymasterView;
+                                let bgColor = "bg-[#fdf0d5]"; // Default Beige
+                                let borderColor = "border-[#d8c29d]";
+                                let textColor = "text-[#5e503f]";
+                                let shadowColor = "shadow-stone-900/20";
+                                let opacity = isRevealed && !card.revealed ? "opacity-60 saturate-[0.7]" : "opacity-100"; // Spymaster view unrevealed
+
+                                if (isRevealed) {
+                                    if (card.type === 'SETEJELER') {
+                                        bgColor = "bg-[#c0392b]"; // Red
+                                        borderColor = "border-[#922b21]";
+                                        textColor = "text-red-50";
+                                    } else if (card.type === 'AVEKETLER') {
+                                        bgColor = "bg-[#2980b9]"; // Blue
+                                        borderColor = "border-[#1f618d]";
+                                        textColor = "text-blue-50";
+                                    } else if (card.type === 'ASSASSIN') {
+                                        bgColor = "bg-[#2c3e50]"; // Dark
+                                        borderColor = "border-[#17202a]";
+                                        textColor = "text-gray-400";
+                                    } else if (card.type === 'NEUTRAL' && card.revealed) { // Only change neutral if revealed
+                                        bgColor = "bg-[#a6acaf]"; // Grey
+                                        borderColor = "border-[#7f8c8d]";
+                                        textColor = "text-gray-700";
+                                    }
+                                }
+
+                                const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
+
+                                return (
+                                    <motion.button
+                                        key={card.id}
+                                        layoutId={`card-${card.id}`}
+                                        onClick={() => canClick && handleCardClick(i)}
+                                        disabled={!canClick}
+                                        className={`
+                                            relative aspect-[4/3] rounded-lg flex items-center justify-center p-2 
+                                            text-center font-bold text-xs md:text-sm lg:text-base uppercase 
+                                            transition-all duration-100 shadow-md select-none group
+                                            border-b-[6px] active:border-b-0 active:translate-y-[6px]
+                                            ${bgColor} ${borderColor} ${textColor} ${opacity}
+                                            ${canClick ? 'cursor-pointer hover:-translate-y-1 hover:brightness-110' : 'cursor-default'}
+                                        `}
+                                    >
+                                        <span className={`block w-full break-words leading-tight z-10 font-sans tracking-wide drop-shadow-sm ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-4' : ''}`}>
+                                            {card.word}
+                                        </span>
+
+                                        {/* Inner Bevel Highlight */}
+                                        <div className="absolute inset-x-0 top-0 h-[2px] bg-white/30 rounded-t-lg pointer-events-none" />
+                                    </motion.button>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                {/* RIGHT: SETEJELER (Red) + LOGS */}
+                <div className="w-full lg:w-80 flex flex-col gap-4 order-3">
+                    {/* Score / Header */}
+                    <div className="bg-orange-600 rounded-xl p-4 shadow-lg border-b-4 border-orange-800 flex items-center justify-between">
+                        <span className="text-4xl font-black text-white bg-black/20 px-3 py-1 rounded-lg">{setejelerLeft}</span>
+                        <h2 className="text-white font-black text-xl uppercase tracking-wider">SETEJELER</h2>
+                    </div>
+
+                    {/* Operatives Panel */}
+                    <div className="flex-1 bg-orange-900/40 backdrop-blur-sm rounded-xl border-2 border-orange-500/30 p-4 flex flex-col">
+                        <h3 className="text-orange-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-orange-500/30 pb-1">AJANLAR</h3>
+                        <div className="flex-1 space-y-2 overflow-y-auto">
+                            {setejelerPlayers.filter(p => p.role === 'OPERATIVE').map(p => (
+                                <div key={p.id} className="flex items-center gap-2 text-white bg-orange-800/50 p-2 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
+                                    <span className="font-medium text-sm truncate">{p.name}</span>
+                                </div>
+                            ))}
+                            {myPlayer?.team === 'SETEJELER' && myPlayer.role !== 'OPERATIVE' && (
+                                <button onClick={() => selectRole('OPERATIVE')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-2">
+                                    AJAN OL
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Spymaster Panel */}
+                    <div className="h-32 bg-orange-900/40 backdrop-blur-sm rounded-xl border-2 border-orange-500/30 p-4 flex flex-col">
+                        <h3 className="text-orange-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-orange-500/30 pb-1">ANLATICI</h3>
+                        <div className="flex-1 space-y-2 overflow-y-auto">
+                            {setejelerPlayers.filter(p => p.role === 'SPYMASTER').map(p => (
+                                <div key={p.id} className="flex items-center gap-2 text-white bg-orange-800/50 p-2 rounded-lg border border-orange-400/50">
+                                    <Crown className="w-4 h-4 text-yellow-400" />
+                                    <span className="font-medium text-sm truncate">{p.name}</span>
+                                </div>
+                            ))}
+                            {myPlayer?.team === 'SETEJELER' && myPlayer.role !== 'SPYMASTER' && (
+                                <button onClick={() => selectRole('SPYMASTER')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-auto">
+                                    ANLATICI OL
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* MINIMIZED LOG PANEL */}
+                    <div className="h-48 bg-slate-900/80 rounded-xl border border-white/10 overflow-hidden flex flex-col shadow-2xl">
+                        <div className="p-2 bg-black/40 border-b border-white/5 flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <h3 className="font-mono text-slate-400 text-[10px] uppercase">GÖREV KAYDI</h3>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-2 font-mono text-[10px]">
+                            {gameState.logs.map(log => (
+                                <div key={log.id} className={`opacity-80 ${log.type === 'SUCCESS' ? 'text-green-400' :
+                                        log.type === 'DANGER' ? 'text-red-400' :
+                                            log.type === 'WARNING' ? 'text-yellow-400' :
+                                                'text-slate-300'
+                                    }`}>
+                                    <span className="opacity-50 mr-2">[{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]</span>
+                                    {log.text}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     );
 }
