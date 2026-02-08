@@ -108,7 +108,7 @@ export default function CodenamesPage() {
                     // Kendimizi oyuncu listesine ekle
                     setGameState(prev => ({
                         ...prev,
-                        players: [{ id: id, name: 'Host', team: null, isHost: true }]
+                        players: [{ id: id, name: '', team: null, isHost: true }]
                     }));
                 }
             });
@@ -385,7 +385,7 @@ export default function CodenamesPage() {
                 <div className="flex-1 flex flex-col items-center justify-center p-4 gap-8 max-w-6xl mx-auto w-full">
 
                     {/* Name Entry (Eğer isim yoksa) */}
-                    {!myPlayer?.name || (myPlayer.name === 'Host' && isHost && !myName) ? (
+                    {!myPlayer?.name ? (
                         // Host ilk girişte ismini henüz inputa yazmadıysa veya Guest henüz girmediyse
                         // Basitleştirme: Host default 'Host' ama değiştirebilir. Guest 'Guest' ama değiştirmeli.
                         <motion.div
