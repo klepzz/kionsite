@@ -28,6 +28,7 @@ export default function Navbar() {
         { name: t("nav.home"), path: "/" },
         { name: t("nav.archive"), path: "/archive" },
         { name: t("nav.quizzes"), path: "/tests" },
+        { name: "Games", path: "/games" },
         { name: t("nav.about"), path: "/about" },
     ];
 
@@ -130,8 +131,8 @@ export default function Navbar() {
                                     href={item.path}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className={`block px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${isActive
-                                            ? "text-emerald-700 dark:text-emerald-400 bg-muted shadow-sm"
-                                            : "text-foreground hover:text-brand-primary hover:bg-muted/50"
+                                        ? "text-emerald-700 dark:text-emerald-400 bg-muted shadow-sm"
+                                        : "text-foreground hover:text-brand-primary hover:bg-muted/50"
                                         }`}
                                 >
                                     {item.name}
