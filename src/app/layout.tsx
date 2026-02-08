@@ -8,7 +8,6 @@ import Footer from "./components/Footer";
 import CookieBanner from "./components/CookieBanner";
 import ReadingProgressBar from "./components/ReadingProgressBar";
 
-// Editorial Fonts
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -20,6 +19,20 @@ const lato = Lato({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+import { Cinzel, Roboto_Mono } from "next/font/google";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  variable: "--font-cinzel",
+  display: "swap",
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -79,7 +92,7 @@ export default function RootLayout({
         <meta name="google-site-verification" content="wDCeoCkrxQ2FFg7cGuPhBYtQELxkekzSVkhxGc2Tpbg" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7064706669437252" crossOrigin="anonymous"></script>
       </head>
-      <body className={`${playfair.variable} ${lato.variable} antialiased`}>
+      <body className={`${playfair.variable} ${lato.variable} ${cinzel.variable} ${robotoMono.variable} antialiased`}>
         <ThemeProvider>
           <LanguageProvider>
             <div className="page-transition-wrapper min-h-screen flex flex-col">

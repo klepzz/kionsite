@@ -30,6 +30,13 @@ interface Card {
     revealed: boolean;
 }
 
+interface GameLog {
+    id: string;
+    text: string;
+    type: 'INFO' | 'SUCCESS' | 'DANGER' | 'WARNING';
+    timestamp: number;
+}
+
 interface GameState {
     phase: GamePhase;
     turnPhase: TurnPhase;
@@ -39,6 +46,7 @@ interface GameState {
     players: Player[];
     currentClue: { word: string; number: number } | null;
     guessesRemaining: number;
+    logs: GameLog[];
 }
 
 // --- SABİTLER ---
@@ -83,7 +91,8 @@ export default function CodenamesPage() {
         winner: null,
         players: [],
         currentClue: null,
-        guessesRemaining: 0
+        guessesRemaining: 0,
+        logs: []
     });
 
     // PeerJS Referansları
@@ -298,15 +307,41 @@ export default function CodenamesPage() {
 
         setGameState(newState);
         broadcastState(newState);
+        addLog('Oyun Başladı! İyi şanslar.', 'INFO');
+    };
+
+    const addLog = (text: string, type: GameLog['type'] = 'INFO') => {
+        setGameState(prev => {
+            const newLog: GameLog = {
+                id: Math.random().toString(36).substr(2, 9),
+                text,
+                type,
+                timestamp: Date.now()
+            };
+            const newState = { ...prev, logs: [newLog, ...prev.logs].slice(0, 50) }; // Keep last 50
+            broadcastState(newState); // Note: Calling broadcastState inside setState callback might be redundant if we broadcast newState returned from here, but here we are in a helper that might be called from within another setState or standalone. Be careful.
+            // Actually, best to return newState and let caller broadcast if needed? 
+            // BUT logs are often side effects. 
+            // Let's make addLog standalone that does setGameState.
+            return newState;
+        });
     };
 
     const processClue = (word: string, number: number) => {
         setGameState(prev => {
+            const newLog: GameLog = {
+                id: Math.random().toString(36).substr(2, 9),
+                text: `ANTALICI: "${word}" (${number})`,
+                type: 'INFO',
+                timestamp: Date.now()
+            };
+
             const newState = {
                 ...prev,
                 turnPhase: 'GUESS' as TurnPhase,
                 currentClue: { word, number },
-                guessesRemaining: number + 1
+                guessesRemaining: number + 1,
+                logs: [newLog, ...prev.logs]
             };
             broadcastState(newState);
             return newState;
@@ -316,12 +351,20 @@ export default function CodenamesPage() {
     const passTurn = () => {
         setGameState(prev => {
             const newTurn: Team = prev.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
+            const newLog: GameLog = {
+                id: Math.random().toString(36).substr(2, 9),
+                text: `${prev.currentTurn} turu pas geçti.`,
+                type: 'WARNING',
+                timestamp: Date.now()
+            };
+
             const newState = {
                 ...prev,
                 currentTurn: newTurn,
                 turnPhase: 'CLUE' as TurnPhase,
                 currentClue: null,
-                guessesRemaining: 0
+                guessesRemaining: 0,
+                logs: [newLog, ...prev.logs]
             };
             broadcastState(newState);
             return newState;
@@ -468,8 +511,8 @@ export default function CodenamesPage() {
                     <Link href="/games" className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
                         <ArrowLeft className="w-5 h-5" /> Çıkış
                     </Link>
-                    <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500 tracking-tighter">
-                        Kion Names
+                    <h1 className="font-cinzel text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500 tracking-widest drop-shadow-[0_2px_10px_rgba(251,191,36,0.2)]">
+                        KION NAMES
                     </h1>
                     <div className="w-24" /> {/* Spacer */}
                 </div>
@@ -697,8 +740,8 @@ export default function CodenamesPage() {
                     <Link href="/games" className="text-white/50 hover:text-white transition-colors">
                         <ArrowLeft className="w-6 h-6" />
                     </Link>
-                    <span className="font-bold text-xl tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                        Kion Names
+                    <span className="font-cinzel font-black text-2xl tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-amber-100 to-amber-400 drop-shadow-sm">
+                        KION NAMES
                     </span>
                 </div>
 
@@ -821,62 +864,101 @@ export default function CodenamesPage() {
                 )}
             </div>
 
-            {/* Grid */}
-            <div className="max-w-6xl mx-auto px-4 pb-20">
-                <div className="grid grid-cols-5 gap-3 md:gap-4">
-                    {gameState.cards.map((card, i) => {
-                        // Kart Stilleri
-                        let baseStyle = "aspect-[4/3] rounded-xl flex items-center justify-center p-2 text-center font-bold text-sm md:text-xl uppercase transition-all duration-300 shadow-lg select-none relative overflow-hidden group";
+            {/* Main Game Area: Logs + Grid */}
+            <div className="max-w-7xl mx-auto px-4 pb-20 flex flex-col-reverse lg:flex-row gap-6 h-[calc(100vh-300px)] min-h-[500px]">
 
-                        if (card.revealed || spymasterView) {
-                            // AÇIK KART (veya Spymaster görüyor)
-                            // Spymaster için biraz daha soluk yapalım ki kapalı olduğu belli olsun
-                            const opacity = card.revealed ? "opacity-100" : "opacity-60 saturate-50";
-
-                            if (card.type === 'SETEJELER') {
-                                baseStyle += ` bg-orange-600/90 text-orange-50 border-2 border-orange-400/50 shadow-orange-900/50 ${opacity}`;
-                            } else if (card.type === 'AVEKETLER') {
-                                baseStyle += ` bg-cyan-600/90 text-cyan-50 border-2 border-cyan-400/50 shadow-cyan-900/50 ${opacity}`;
-                            } else if (card.type === 'ASSASSIN') {
-                                baseStyle += ` bg-slate-900 text-slate-400 border-2 border-slate-700 grayscale ${opacity}`;
-                            } else { // Neutral
-                                baseStyle += ` bg-[#d4c5a9] text-[#5e523e] border-2 border-[#b0a082] ${opacity}`;
-                            }
-                        } else {
-                            // KAPALI KART (Operative görüyor)
-                            baseStyle += " bg-slate-100 text-slate-800 hover:scale-[1.02] hover:shadow-xl cursor-pointer";
-                            if (!isMyTurn || gameState.winner || gameState.turnPhase === 'CLUE' || myPlayer?.role === 'SPYMASTER') {
-                                baseStyle += " cursor-not-allowed opacity-80 hover:scale-100";
-                            }
-                        }
-
-                        // Tıklama engeli: Spymaster tıklayamaz, sırası gelmeyen tıklayamaz, Clue aşamasında tıklanamaz
-                        const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
-
-                        return (
-                            <motion.button
-                                key={card.id}
-                                layoutId={`card-${card.id}`}
-                                onClick={() => canClick && handleCardClick(i)}
-                                disabled={!canClick}
-                                className={baseStyle}
-                                whileTap={canClick ? { scale: 0.95 } : {}}
+                {/* LOG PANEL */}
+                <div className="lg:w-80 flex flex-col bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden shadow-2xl h-full lg:h-auto max-h-[300px] lg:max-h-full">
+                    <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <h3 className="font-cinzel font-bold text-slate-300 tracking-wider text-sm">GÖREV KAYITLARI</h3>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-xs">
+                        {gameState.logs.length === 0 && (
+                            <div className="text-slate-600 text-center italic mt-10">Kayıt bekleniyor...</div>
+                        )}
+                        {gameState.logs.map(log => (
+                            <motion.div
+                                key={log.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className={`p-3 rounded-lg border-l-2 ${log.type === 'SUCCESS' ? 'border-green-500 bg-green-500/10 text-green-200' :
+                                        log.type === 'DANGER' ? 'border-red-500 bg-red-500/10 text-red-200' :
+                                            log.type === 'WARNING' ? 'border-yellow-500 bg-yellow-500/10 text-yellow-200' :
+                                                'border-slate-500 bg-slate-500/10 text-slate-300'
+                                    }`}
                             >
-                                <span className={`relative z-10 ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-500 decoration-4' : ''}`}>
-                                    {card.word}
-                                </span>
+                                <div className="flex justify-between opacity-50 text-[10px] mb-1">
+                                    <span>{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                                </div>
+                                <div>{log.text}</div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
 
-                                {/* Kapanan kart efekti */}
-                                {card.revealed && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"
-                                    />
-                                )}
-                            </motion.button>
-                        );
-                    })}
+                {/* GRID */}
+                <div className="flex-1 bg-slate-900/30 rounded-3xl p-4 lg:p-6 border border-white/5 backdrop-blur-sm overflow-y-auto">
+                    <div className="grid grid-cols-5 gap-2 md:gap-3 lg:gap-4 h-full content-center">
+                        {gameState.cards.map((card, i) => {
+                            // Enhanced Card Styles
+                            let baseStyle = "aspect-[4/3] rounded-xl flex items-center justify-center p-1 md:p-2 text-center font-bold text-xs md:text-sm lg:text-lg uppercase transition-all duration-300 shadow-md select-none relative overflow-hidden group";
+
+                            // Typography
+                            const textStyle = "font-sans tracking-wide z-10 drop-shadow-md";
+
+                            if (card.revealed || spymasterView) {
+                                // AÇIK KART (veya Spymaster)
+                                const opacity = card.revealed ? "opacity-100 scale-100" : "opacity-60 saturate-[0.2] scale-[0.98]";
+
+                                if (card.type === 'SETEJELER') {
+                                    // Deep rich red-orange gradient
+                                    baseStyle += ` bg-gradient-to-br from-[#7f1d1d] to-[#c2410c] text-orange-50 border border-orange-500/30 shadow-[0_0_15px_rgba(234,88,12,0.3)] ${opacity}`;
+                                } else if (card.type === 'AVEKETLER') {
+                                    // Deep rich blue-cyan gradient
+                                    baseStyle += ` bg-gradient-to-br from-[#0c4a6e] to-[#0284c7] text-cyan-50 border border-cyan-500/30 shadow-[0_0_15px_rgba(2,132,199,0.3)] ${opacity}`;
+                                } else if (card.type === 'ASSASSIN') {
+                                    // Black with red danger pattern
+                                    baseStyle += ` bg-black text-red-500 border border-red-900/50 shadow-inner ${opacity}`;
+                                } else { // Neutral
+                                    // Warm beige/sand
+                                    baseStyle += ` bg-[#d6d3d1] text-[#44403c] border border-[#a8a29e] ${opacity}`;
+                                }
+                            } else {
+                                // KAPALI KART (Operative)
+                                baseStyle += " bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 hover:scale-[1.03] hover:shadow-xl hover:from-white hover:to-slate-200 cursor-pointer border-b-4 border-slate-400/50 active:border-b-0 active:translate-y-1";
+                                if (!isMyTurn || gameState.winner || gameState.turnPhase === 'CLUE' || myPlayer?.role === 'SPYMASTER') {
+                                    baseStyle += " cursor-not-allowed opacity-75 hover:scale-100 hover:from-slate-200 grayscale";
+                                }
+                            }
+
+                            // Tıklama engeli
+                            const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
+
+                            return (
+                                <motion.button
+                                    key={card.id}
+                                    layoutId={`card-${card.id}`}
+                                    onClick={() => canClick && handleCardClick(i)}
+                                    disabled={!canClick}
+                                    className={baseStyle}
+                                    whileTap={canClick ? { scale: 0.95 } : {}}
+                                >
+                                    <span className={`${textStyle} ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-2' : ''}`}>
+                                        {card.word}
+                                    </span>
+
+                                    {/* Texture / Shine Overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                                    {/* Inner Border for style */}
+                                    {!card.revealed && !spymasterView && (
+                                        <div className="absolute inset-1 border border-slate-400/30 rounded-lg pointer-events-none" />
+                                    )}
+                                </motion.button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
