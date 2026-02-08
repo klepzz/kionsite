@@ -13,11 +13,13 @@ import { codenamesWords, shuffleWords } from '../../../data/codenames-words';
 type Team = 'SETEJELER' | 'AVEKETLER';
 type CardType = 'SETEJELER' | 'AVEKETLER' | 'NEUTRAL' | 'ASSASSIN';
 type GamePhase = 'LOBBY' | 'PLAYING' | 'GAME_OVER';
+type TurnPhase = 'CLUE' | 'GUESS';
 
 interface Player {
-    id: string; // Peer ID
+    id: string;
     name: string;
     team: Team | null;
+    role: 'SPYMASTER' | 'OPERATIVE' | null;
     isHost: boolean;
 }
 
@@ -30,10 +32,13 @@ interface Card {
 
 interface GameState {
     phase: GamePhase;
+    turnPhase: TurnPhase;
     cards: Card[];
     currentTurn: Team;
     winner: Team | null;
     players: Player[];
+    currentClue: { word: string; number: number } | null;
+    guessesRemaining: number;
 }
 
 // --- SABİTLER ---
@@ -72,10 +77,13 @@ export default function CodenamesPage() {
     // Oyun Durumu
     const [gameState, setGameState] = useState<GameState>({
         phase: 'LOBBY',
+        turnPhase: 'CLUE',
         cards: [],
-        currentTurn: 'SETEJELER', // Başlangıç (Host start yapınca değişebilir)
+        currentTurn: 'SETEJELER',
         winner: null,
-        players: []
+        players: [],
+        currentClue: null,
+        guessesRemaining: 0
     });
 
     // PeerJS Referansları
@@ -108,7 +116,7 @@ export default function CodenamesPage() {
                     // Kendimizi oyuncu listesine ekle
                     setGameState(prev => ({
                         ...prev,
-                        players: [{ id: id, name: '', team: null, isHost: true }]
+                        players: [{ id: id, name: '', team: null, role: null, isHost: true }]
                     }));
                 }
             });
@@ -168,7 +176,7 @@ export default function CodenamesPage() {
                 if (existing) {
                     newPlayers = prev.players.map(p => p.id === conn.peer ? { ...p, name: data.name } : p);
                 } else {
-                    newPlayers = [...prev.players, { id: conn.peer, name: data.name, team: null, isHost: false }];
+                    newPlayers = [...prev.players, { id: conn.peer, name: data.name, team: null, role: null, isHost: false }];
                 }
                 const newState = { ...prev, players: newPlayers };
                 broadcastState(newState);
@@ -176,9 +184,35 @@ export default function CodenamesPage() {
             });
         } else if (data.type === 'SELECT_TEAM') {
             updatePlayerTeam(conn.peer, data.team);
+        } else if (data.type === 'SELECT_ROLE') {
+            updatePlayerRole(conn.peer, data.role);
+        } else if (data.type === 'GIVE_CLUE') {
+            processClue(data.word, data.number);
+        } else if (data.type === 'END_TURN') {
+            passTurn();
         } else if (data.type === 'REVEAL_CARD') {
             processCardReveal(data.index);
         }
+    };
+
+    const updatePlayerRole = (playerId: string, role: 'SPYMASTER' | 'OPERATIVE') => {
+        setGameState(prev => {
+            let newPlayers = [...prev.players];
+            const player = newPlayers.find(p => p.id === playerId);
+
+            // Eğer Spymaster olunmak isteniyorsa, o takımdaki diğer Spymaster'ı Operative yap
+            if (role === 'SPYMASTER' && player?.team) {
+                newPlayers = newPlayers.map(p =>
+                    (p.team === player.team && p.role === 'SPYMASTER' && p.id !== playerId) ? { ...p, role: 'OPERATIVE' } : p
+                );
+            }
+
+            newPlayers = newPlayers.map(p => p.id === playerId ? { ...p, role } : p);
+
+            const newState = { ...prev, players: newPlayers };
+            broadcastState(newState);
+            return newState;
+        });
     };
 
     const updatePlayerTeam = (playerId: string, team: Team) => {
@@ -266,6 +300,34 @@ export default function CodenamesPage() {
         broadcastState(newState);
     };
 
+    const processClue = (word: string, number: number) => {
+        setGameState(prev => {
+            const newState = {
+                ...prev,
+                turnPhase: 'GUESS' as TurnPhase,
+                currentClue: { word, number },
+                guessesRemaining: number + 1
+            };
+            broadcastState(newState);
+            return newState;
+        });
+    };
+
+    const passTurn = () => {
+        setGameState(prev => {
+            const newTurn: Team = prev.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
+            const newState = {
+                ...prev,
+                currentTurn: newTurn,
+                turnPhase: 'CLUE' as TurnPhase,
+                currentClue: null,
+                guessesRemaining: 0
+            };
+            broadcastState(newState);
+            return newState;
+        });
+    };
+
     const processCardReveal = (index: number) => {
         const card = gameState.cards[index];
         if (card.revealed || gameState.winner) return;
@@ -273,22 +335,38 @@ export default function CodenamesPage() {
         const newCards = [...gameState.cards];
         newCards[index].revealed = true;
 
-        let newTurn = gameState.currentTurn;
+        let newTurn: Team = gameState.currentTurn;
         let newWinner: Team | null = null;
+        let newTurnChanged = false;
 
         if (card.type === 'ASSASSIN') {
-            // Suikastçi: Çeken takım kaybeder (Diğeri kazanır)
+            // Suikastçi
             newWinner = gameState.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
         } else if (card.type === 'NEUTRAL') {
-            // Pasif: Sıra geçer
+            // Pasif
             newTurn = gameState.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
+            newTurnChanged = true;
         } else if (card.type !== gameState.currentTurn) {
-            // Rakip kartı: Sıra geçer
+            // Rakip
             newTurn = gameState.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
+            newTurnChanged = true;
         }
-        // Kendi kartı: Sıra devam eder
 
-        // Kazanma Kontrolü (Suikastçi yoksa)
+        // Tahmin hakkı
+        let newGuessesRemaining = gameState.guessesRemaining;
+
+        if (!newWinner && !newTurnChanged) {
+            if (newGuessesRemaining > 0) {
+                newGuessesRemaining--;
+            }
+
+            if (newGuessesRemaining === 0) {
+                newTurn = newTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
+                newTurnChanged = true;
+            }
+        }
+
+        // Kazanma
         if (!newWinner) {
             const setejelerLeft = newCards.filter(c => c.type === 'SETEJELER' && !c.revealed).length;
             const aveketlerLeft = newCards.filter(c => c.type === 'AVEKETLER' && !c.revealed).length;
@@ -301,7 +379,10 @@ export default function CodenamesPage() {
             ...gameState,
             cards: newCards,
             currentTurn: newTurn,
-            winner: newWinner
+            winner: newWinner,
+            turnPhase: (newTurnChanged || newWinner ? 'CLUE' : 'GUESS') as TurnPhase,
+            currentClue: (newTurnChanged || newWinner) ? null : gameState.currentClue,
+            guessesRemaining: (newTurnChanged || newWinner) ? 0 : newGuessesRemaining
         };
 
         setGameState(newState);
@@ -327,8 +408,20 @@ export default function CodenamesPage() {
     const selectTeam = (team: Team) => {
         if (isHost) {
             updatePlayerTeam(myPeerId, team);
+            // Takım değiştirince rolü sıfırla veya Operative yap
+            updatePlayerRole(myPeerId, 'OPERATIVE');
         } else {
             sendToHost('SELECT_TEAM', { team });
+            sendToHost('SELECT_ROLE', { role: 'OPERATIVE' });
+        }
+    };
+
+    const selectRole = (role: 'SPYMASTER' | 'OPERATIVE') => {
+        if (!myPlayer?.team) return;
+        if (isHost) {
+            updatePlayerRole(myPeerId, role);
+        } else {
+            sendToHost('SELECT_ROLE', { role });
         }
     };
 
@@ -462,15 +555,41 @@ export default function CodenamesPage() {
                                                         initial={{ opacity: 0, x: -20 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: -20 }}
-                                                        className="flex items-center gap-3 bg-slate-900/60 p-3 rounded-xl border border-white/5"
+                                                        className="flex items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-white/5"
                                                     >
-                                                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-slate-900">
-                                                            {p.name.charAt(0).toUpperCase()}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-slate-900">
+                                                                {p.name.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-sm">{p.name} {p.isHost && '👑'} {p.id === myPeerId && '(Sen)'}</span>
+                                                                <span className="text-xs text-orange-400/80 font-mono">
+                                                                    {p.role === 'SPYMASTER' ? '🕵️ ANLATICI' : '👤 AJAN'}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <span className="font-medium">{p.name} {p.isHost && '👑'} {p.id === myPeerId && '(Sen)'}</span>
                                                     </motion.div>
                                                 ))}
                                             </AnimatePresence>
+
+                                            {/* Role Selection Buttons (Only if in this team) */}
+                                            {myPlayer?.team === 'SETEJELER' && (
+                                                <div className="flex gap-2 mt-4">
+                                                    <button
+                                                        onClick={() => selectRole('SPYMASTER')}
+                                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${myPlayer.role === 'SPYMASTER' ? 'bg-orange-500 text-white' : 'bg-orange-950/40 text-orange-400 hover:bg-orange-900/40'}`}
+                                                    >
+                                                        🕵️ ANLATICI
+                                                    </button>
+                                                    <button
+                                                        onClick={() => selectRole('OPERATIVE')}
+                                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${myPlayer.role === 'OPERATIVE' ? 'bg-slate-700 text-white' : 'bg-slate-800/40 text-slate-400 hover:bg-slate-800'}`}
+                                                    >
+                                                        👤 AJAN
+                                                    </button>
+                                                </div>
+                                            )}
+
                                             {setejelerPlayers.length === 0 && (
                                                 <div className="text-center text-slate-600 italic py-8">Henüz kimse yok</div>
                                             )}
@@ -503,15 +622,41 @@ export default function CodenamesPage() {
                                                         initial={{ opacity: 0, x: 20 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: 20 }}
-                                                        className="flex items-center gap-3 bg-slate-900/60 p-3 rounded-xl border border-white/5"
+                                                        className="flex items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-white/5"
                                                     >
-                                                        <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-slate-900">
-                                                            {p.name.charAt(0).toUpperCase()}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-slate-900">
+                                                                {p.name.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-sm">{p.name} {p.isHost && '👑'} {p.id === myPeerId && '(Sen)'}</span>
+                                                                <span className="text-xs text-cyan-400/80 font-mono">
+                                                                    {p.role === 'SPYMASTER' ? '🕵️ ANLATICI' : '👤 AJAN'}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <span className="font-medium">{p.name} {p.isHost && '👑'} {p.id === myPeerId && '(Sen)'}</span>
                                                     </motion.div>
                                                 ))}
                                             </AnimatePresence>
+
+                                            {/* Role Selection Buttons (Only if in this team) */}
+                                            {myPlayer?.team === 'AVEKETLER' && (
+                                                <div className="flex gap-2 mt-4">
+                                                    <button
+                                                        onClick={() => selectRole('SPYMASTER')}
+                                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${myPlayer.role === 'SPYMASTER' ? 'bg-cyan-500 text-white' : 'bg-cyan-950/40 text-cyan-400 hover:bg-cyan-900/40'}`}
+                                                    >
+                                                        🕵️ ANLATICI
+                                                    </button>
+                                                    <button
+                                                        onClick={() => selectRole('OPERATIVE')}
+                                                        className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${myPlayer.role === 'OPERATIVE' ? 'bg-slate-700 text-white' : 'bg-slate-800/40 text-slate-400 hover:bg-slate-800'}`}
+                                                    >
+                                                        👤 AJAN
+                                                    </button>
+                                                </div>
+                                            )}
+
                                             {aveketlerPlayers.length === 0 && (
                                                 <div className="text-center text-slate-600 italic py-8">Henüz kimse yok</div>
                                             )}
@@ -539,6 +684,9 @@ export default function CodenamesPage() {
     const setejelerLeft = gameState.cards.filter(c => c.type === 'SETEJELER' && !c.revealed).length;
     const aveketlerLeft = gameState.cards.filter(c => c.type === 'AVEKETLER' && !c.revealed).length;
     const isMyTurn = myPlayer?.team === gameState.currentTurn;
+
+    // Spymaster View: Spymaster kendi rolündeyse veya Oyun bitmişse her şeyi görür
+    const spymasterView = myPlayer?.role === 'SPYMASTER' || !!gameState.winner;
 
     return (
         <div className={`min-h-screen font-sans transition-colors duration-1000 ${gameState.winner ? (gameState.winner === 'SETEJELER' ? TEAMS.SETEJELER.winBg : TEAMS.AVEKETLER.winBg) : 'bg-slate-950'} text-white`}>
@@ -576,6 +724,77 @@ export default function CodenamesPage() {
                 </div>
             </div>
 
+            {/* Game Controls & Info */}
+            <div className="max-w-2xl mx-auto px-4 py-4">
+                {/* CLUE DISPLAY */}
+                {gameState.turnPhase === 'GUESS' && gameState.currentClue && (
+                    <div className="flex items-center justify-between bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 mb-6 animate-pulse">
+                        <div className="flex items-center gap-4">
+                            <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">İPUCU:</span>
+                            <span className="text-3xl font-black text-white">{gameState.currentClue.word}</span>
+                            <span className="bg-white/20 px-3 py-1 rounded text-xl font-bold">{gameState.currentClue.number}</span>
+                        </div>
+                        {isMyTurn && myPlayer?.role === 'OPERATIVE' && (
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm text-slate-400">Kalan Hak: {gameState.guessesRemaining}</span>
+                                <button
+                                    onClick={() => isHost ? passTurn() : sendToHost('END_TURN')}
+                                    className="bg-red-500/20 hover:bg-red-500/40 text-red-300 px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-red-500/30"
+                                >
+                                    PAS GEÇ
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* SPYMASTER INPUT */}
+                {isMyTurn && myPlayer?.role === 'SPYMASTER' && gameState.turnPhase === 'CLUE' && (
+                    <div className="bg-slate-900 px-6 py-4 rounded-2xl border border-slate-700 shadow-xl mb-6 flex flex-col items-center gap-4">
+                        <h3 className="text-slate-400 font-bold text-sm uppercase tracking-widest">İPUCU VER</h3>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const form = e.target as HTMLFormElement;
+                                const word = (form.elements.namedItem('word') as HTMLInputElement).value;
+                                const number = parseInt((form.elements.namedItem('number') as HTMLInputElement).value);
+                                if (word && number) {
+                                    if (isHost) processClue(word, number);
+                                    else sendToHost('GIVE_CLUE', { word, number });
+                                }
+                            }}
+                            className="flex gap-2 w-full"
+                        >
+                            <input
+                                name="word"
+                                type="text"
+                                placeholder="Kelime..."
+                                className="flex-1 bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 outline-none uppercase font-bold"
+                                autoComplete="off"
+                            />
+                            <select
+                                name="number"
+                                className="bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 outline-none font-bold"
+                            >
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <option key={n} value={n}>{n}</option>)}
+                            </select>
+                            <button
+                                type="submit"
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-xl font-bold transition-colors"
+                            >
+                                GÖNDER
+                            </button>
+                        </form>
+                    </div>
+                )}
+
+                {isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'CLUE' && (
+                    <div className="text-center text-slate-400 animate-pulse mb-6">
+                        Anlatıcının ipucu vermesi bekleniyor...
+                    </div>
+                )}
+            </div>
+
             {/* Turn Indicator or Game Over */}
             <div className="flex justify-center my-6">
                 {gameState.winner ? (
@@ -609,31 +828,39 @@ export default function CodenamesPage() {
                         // Kart Stilleri
                         let baseStyle = "aspect-[4/3] rounded-xl flex items-center justify-center p-2 text-center font-bold text-sm md:text-xl uppercase transition-all duration-300 shadow-lg select-none relative overflow-hidden group";
 
-                        if (card.revealed) {
-                            // AÇIK KART
+                        if (card.revealed || spymasterView) {
+                            // AÇIK KART (veya Spymaster görüyor)
+                            // Spymaster için biraz daha soluk yapalım ki kapalı olduğu belli olsun
+                            const opacity = card.revealed ? "opacity-100" : "opacity-60 saturate-50";
+
                             if (card.type === 'SETEJELER') {
-                                baseStyle += " bg-orange-600/90 text-orange-50 border-2 border-orange-400/50 shadow-orange-900/50";
+                                baseStyle += ` bg-orange-600/90 text-orange-50 border-2 border-orange-400/50 shadow-orange-900/50 ${opacity}`;
                             } else if (card.type === 'AVEKETLER') {
-                                baseStyle += " bg-cyan-600/90 text-cyan-50 border-2 border-cyan-400/50 shadow-cyan-900/50";
+                                baseStyle += ` bg-cyan-600/90 text-cyan-50 border-2 border-cyan-400/50 shadow-cyan-900/50 ${opacity}`;
                             } else if (card.type === 'ASSASSIN') {
-                                baseStyle += " bg-slate-900 text-slate-400 border-2 border-slate-700 grayscale";
+                                baseStyle += ` bg-slate-900 text-slate-400 border-2 border-slate-700 grayscale ${opacity}`;
                             } else { // Neutral
-                                baseStyle += " bg-[#d4c5a9] text-[#5e523e] border-2 border-[#b0a082]";
+                                baseStyle += ` bg-[#d4c5a9] text-[#5e523e] border-2 border-[#b0a082] ${opacity}`;
                             }
                         } else {
-                            // KAPALI KART
+                            // KAPALI KART (Operative görüyor)
                             baseStyle += " bg-slate-100 text-slate-800 hover:scale-[1.02] hover:shadow-xl cursor-pointer";
-                            if (!isMyTurn || gameState.winner) baseStyle += " cursor-not-allowed opacity-80 hover:scale-100";
+                            if (!isMyTurn || gameState.winner || gameState.turnPhase === 'CLUE' || myPlayer?.role === 'SPYMASTER') {
+                                baseStyle += " cursor-not-allowed opacity-80 hover:scale-100";
+                            }
                         }
+
+                        // Tıklama engeli: Spymaster tıklayamaz, sırası gelmeyen tıklayamaz, Clue aşamasında tıklanamaz
+                        const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
 
                         return (
                             <motion.button
                                 key={card.id}
                                 layoutId={`card-${card.id}`}
-                                onClick={() => handleCardClick(i)}
-                                disabled={card.revealed || !!gameState.winner}
+                                onClick={() => canClick && handleCardClick(i)}
+                                disabled={!canClick}
                                 className={baseStyle}
-                                whileTap={{ scale: 0.95 }}
+                                whileTap={canClick ? { scale: 0.95 } : {}}
                             >
                                 <span className={`relative z-10 ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-500 decoration-4' : ''}`}>
                                     {card.word}
