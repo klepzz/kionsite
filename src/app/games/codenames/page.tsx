@@ -771,24 +771,54 @@ export default function CodenamesPage() {
             <div className="max-w-2xl mx-auto px-4 py-4">
                 {/* CLUE DISPLAY */}
                 {gameState.turnPhase === 'GUESS' && gameState.currentClue && (
-                    <div className="flex items-center justify-between bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 mb-6 animate-pulse">
-                        <div className="flex items-center gap-4">
-                            <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">İPUCU:</span>
-                            <span className="text-3xl font-black text-white">{gameState.currentClue.word}</span>
-                            <span className="bg-white/20 px-3 py-1 rounded text-xl font-bold">{gameState.currentClue.number}</span>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        className={`relative flex flex-col md:flex-row items-center justify-between px-8 py-6 rounded-3xl border-2 shadow-2xl mb-8 overflow-hidden group ${gameState.currentTurn === 'SETEJELER'
+                                ? 'bg-gradient-to-r from-orange-950/90 to-slate-900 border-orange-500/50 shadow-orange-900/40'
+                                : 'bg-gradient-to-r from-cyan-950/90 to-slate-900 border-cyan-500/50 shadow-cyan-900/40'
+                            }`}
+                    >
+                        {/* Background Effect */}
+                        <div className={`absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay`} />
+
+                        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 z-10">
+                            <div className="flex flex-col items-center md:items-start">
+                                <span className={`font-cinzel font-bold text-xs tracking-[0.3em] mb-1 ${gameState.currentTurn === 'SETEJELER' ? 'text-orange-400' : 'text-cyan-400'
+                                    }`}>
+                                    ANLATICI İPUCU
+                                </span>
+                                <div className="flex items-baseline gap-4">
+                                    <span className="font-cinzel font-black text-4xl md:text-5xl text-white drop-shadow-md">
+                                        {gameState.currentClue.word}
+                                    </span>
+                                    <span className={`px-4 py-1 rounded-full text-xl font-bold border ${gameState.currentTurn === 'SETEJELER'
+                                            ? 'bg-orange-500/20 text-orange-200 border-orange-500/30'
+                                            : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/30'
+                                        }`}>
+                                        {gameState.currentClue.number}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Controls */}
                         {isMyTurn && myPlayer?.role === 'OPERATIVE' && (
-                            <div className="flex items-center gap-4">
-                                <span className="text-sm text-slate-400">Kalan Hak: {gameState.guessesRemaining}</span>
+                            <div className="flex items-center gap-6 mt-4 md:mt-0 z-10 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
+                                <div className="text-center">
+                                    <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">KALAN HAK</span>
+                                    <span className="font-mono text-2xl font-bold text-white">{gameState.guessesRemaining}</span>
+                                </div>
                                 <button
                                     onClick={() => isHost ? passTurn() : sendToHost('END_TURN')}
-                                    className="bg-red-500/20 hover:bg-red-500/40 text-red-300 px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-red-500/30"
+                                    className="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-red-500/20 flex items-center gap-2 group/pass"
                                 >
-                                    PAS GEÇ
+                                    <span>PAS GEÇ</span>
+                                    <ChevronRight className="w-4 h-4 group-hover/pass:translate-x-1 transition-transform" />
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </motion.div>
                 )}
 
                 {/* SPYMASTER INPUT */}
@@ -883,9 +913,9 @@ export default function CodenamesPage() {
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 className={`p-3 rounded-lg border-l-2 ${log.type === 'SUCCESS' ? 'border-green-500 bg-green-500/10 text-green-200' :
-                                        log.type === 'DANGER' ? 'border-red-500 bg-red-500/10 text-red-200' :
-                                            log.type === 'WARNING' ? 'border-yellow-500 bg-yellow-500/10 text-yellow-200' :
-                                                'border-slate-500 bg-slate-500/10 text-slate-300'
+                                    log.type === 'DANGER' ? 'border-red-500 bg-red-500/10 text-red-200' :
+                                        log.type === 'WARNING' ? 'border-yellow-500 bg-yellow-500/10 text-yellow-200' :
+                                            'border-slate-500 bg-slate-500/10 text-slate-300'
                                     }`}
                             >
                                 <div className="flex justify-between opacity-50 text-[10px] mb-1">
