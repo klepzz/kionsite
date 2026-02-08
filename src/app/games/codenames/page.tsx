@@ -787,11 +787,7 @@ export default function CodenamesPage() {
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
-                            {myPlayer?.team === 'AVEKETLER' && myPlayer.role !== 'OPERATIVE' && (
-                                <button onClick={() => selectRole('OPERATIVE')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-2">
-                                    AJAN OL
-                                </button>
-                            )}
+                            {/* Role switch button removed for Game UI */}
                         </div>
                     </div>
 
@@ -805,11 +801,7 @@ export default function CodenamesPage() {
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
-                            {myPlayer?.team === 'AVEKETLER' && myPlayer.role !== 'SPYMASTER' && (
-                                <button onClick={() => selectRole('SPYMASTER')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-auto">
-                                    ANLATICI OL
-                                </button>
-                            )}
+                            {/* Spymaster button removed for Game UI */}
                         </div>
                     </div>
                 </div>
@@ -963,11 +955,7 @@ export default function CodenamesPage() {
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
-                            {myPlayer?.team === 'SETEJELER' && myPlayer.role !== 'OPERATIVE' && (
-                                <button onClick={() => selectRole('OPERATIVE')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-2">
-                                    AJAN OL
-                                </button>
-                            )}
+                            {/* Role switch button removed for Game UI */}
                         </div>
                     </div>
 
@@ -981,11 +969,7 @@ export default function CodenamesPage() {
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
-                            {myPlayer?.team === 'SETEJELER' && myPlayer.role !== 'SPYMASTER' && (
-                                <button onClick={() => selectRole('SPYMASTER')} className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-xs shadow-md transition-colors mt-auto">
-                                    ANLATICI OL
-                                </button>
-                            )}
+                            {/* Spymaster button removed for Game UI */}
                         </div>
                     </div>
 
@@ -998,9 +982,9 @@ export default function CodenamesPage() {
                         <div className="flex-1 overflow-y-auto p-2 space-y-2 font-mono text-[10px]">
                             {gameState.logs.map(log => (
                                 <div key={log.id} className={`opacity-80 ${log.type === 'SUCCESS' ? 'text-green-400' :
-                                        log.type === 'DANGER' ? 'text-red-400' :
-                                            log.type === 'WARNING' ? 'text-yellow-400' :
-                                                'text-slate-300'
+                                    log.type === 'DANGER' ? 'text-red-400' :
+                                        log.type === 'WARNING' ? 'text-yellow-400' :
+                                            'text-slate-300'
                                     }`}>
                                     <span className="opacity-50 mr-2">[{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]</span>
                                     {log.text}
