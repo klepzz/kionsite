@@ -87,30 +87,13 @@ export default function TicTacToePage() {
         setupConnection(connection);
     };
 
+
+
     const setupConnection = (connection: any) => {
         connection.on('open', () => {
             setStatus('Connected!');
             // Send my name immediately upon connection
             connection.send({ type: 'name', name: myName });
-        });
-
-        connection.on('data', (data: any) => {
-            if (data.type === 'move') {
-                handleMove(data.index, false);
-            } else if (data.type === 'reset') {
-                resetGame(false);
-            } else if (data.type === 'name') {
-                setOpponentName(data.name);
-                setStatus('Connected! Game starting...');
-                // If I am host, I should reply with my name properly if not sent yet
-                // But actually open event fires on both sides, so both send names.
-            }
-        });
-
-        connection.on('close', () => {
-            setStatus('Opponent disconnected');
-            setConn(null);
-            setOpponentName('Opponent');
         });
     };
 
@@ -179,6 +162,36 @@ export default function TicTacToePage() {
         setWinner(null);
         setWinningLine(null);
     };
+
+    // Handle connection events with fresh state
+    useEffect(() => {
+        if (!conn) return;
+
+        const handleData = (data: any) => {
+            if (data.type === 'move') {
+                handleMove(data.index, false);
+            } else if (data.type === 'reset') {
+                resetGame(false);
+            } else if (data.type === 'name') {
+                setOpponentName(data.name);
+                setStatus('Connected! Game starting...');
+            }
+        };
+
+        const handleClose = () => {
+            setStatus('Opponent disconnected');
+            setConn(null);
+            setOpponentName('Opponent');
+        };
+
+        conn.on('data', handleData);
+        conn.on('close', handleClose);
+
+        return () => {
+            conn.off('data', handleData);
+            conn.off('close', handleClose);
+        };
+    }, [conn, handleMove, resetGame]);
 
     // 1. Name Entry Screen
     if (!hasEnteredName) {
