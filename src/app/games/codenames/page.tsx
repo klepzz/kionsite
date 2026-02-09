@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, RefreshCcw, Wifi, Copy, Share2, Users, Crown, ChevronRight, Play } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import type { DataConnection } from 'peerjs';
+
 import { codenamesWords, shuffleWords } from '../../../data/codenames-words';
 
 // --- TİPLER ---
@@ -97,8 +97,8 @@ export default function CodenamesPage() {
 
     // PeerJS Referansları
     const peerRef = useRef<any>(null);
-    const connectionsRef = useRef<DataConnection[]>([]); // Host için
-    const hostConnRef = useRef<DataConnection | null>(null); // Guest için
+    const connectionsRef = useRef<any[]>([]); // Host için
+    const hostConnRef = useRef<any | null>(null); // Guest için
 
     const searchParams = useSearchParams();
     const gameIdParam = searchParams.get('gameId');
@@ -107,6 +107,7 @@ export default function CodenamesPage() {
 
     useEffect(() => {
         const initGame = async () => {
+
             const { Peer } = await import('peerjs');
             const peer = new Peer();
 
@@ -152,7 +153,8 @@ export default function CodenamesPage() {
 
     // --- HOST LOGIC ---
 
-    const handleConnection = (conn: DataConnection) => {
+
+    const handleConnection = (conn: any) => {
         connectionsRef.current.push(conn);
 
         conn.on('open', () => {
@@ -176,7 +178,7 @@ export default function CodenamesPage() {
         });
     };
 
-    const handleDataFromClient = (conn: DataConnection, data: any) => {
+    const handleDataFromClient = (conn: any, data: any) => {
         if (data.type === 'JOIN_REQUEST') {
             // Oyuncu ismini kaydet
             setGameState(prev => {
@@ -876,34 +878,35 @@ export default function CodenamesPage() {
                     </div>
 
                     {/* CARD GRID */}
-                    <div className="flex-1 bg-black/20 p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner overflow-hidden">
-                        <div className="grid grid-cols-5 gap-3 md:gap-4 h-full content-center max-w-[900px] mx-auto">
+                    <div className="flex-1 bg-black/20 p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner overflow-y-auto custom-scrollbar">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 min-h-min content-start max-w-[1200px] mx-auto pb-8">
                             {gameState.cards.map((card, i) => {
                                 // 3D TILE STYLE
                                 const isRevealed = card.revealed || spymasterView;
-                                let bgColor = "bg-[#fdf0d5]"; // Default Beige
-                                let borderColor = "border-[#d8c29d]";
-                                let textColor = "text-[#5e503f]";
-                                let shadowColor = "shadow-stone-900/20";
-                                let opacity = isRevealed && !card.revealed ? "opacity-60 saturate-[0.7]" : "opacity-100"; // Spymaster view unrevealed
+
+                                // Base (Unrevealed)
+                                let bgStyle = "bg-gradient-to-br from-[#fdf0d5] to-[#f5e6ca]";
+                                let borderStyle = "border-b-[6px] border-[#d8c29d]";
+                                let textStyle = "text-[#5e503f]";
+                                let opacityStyle = isRevealed && !card.revealed ? "opacity-60 saturate-[0.5] scale-95" : "opacity-100";
 
                                 if (isRevealed) {
                                     if (card.type === 'SETEJELER') {
-                                        bgColor = "bg-[#c0392b]"; // Red
-                                        borderColor = "border-[#922b21]";
-                                        textColor = "text-red-50";
+                                        bgStyle = "bg-gradient-to-br from-[#c0392b] to-[#a93226]";
+                                        borderStyle = "border-b-[6px] border-[#922b21]";
+                                        textStyle = "text-red-50 shadow-sm";
                                     } else if (card.type === 'AVEKETLER') {
-                                        bgColor = "bg-[#2980b9]"; // Blue
-                                        borderColor = "border-[#1f618d]";
-                                        textColor = "text-blue-50";
+                                        bgStyle = "bg-gradient-to-br from-[#2980b9] to-[#2471a3]";
+                                        borderStyle = "border-b-[6px] border-[#1f618d]";
+                                        textStyle = "text-blue-50 shadow-sm";
                                     } else if (card.type === 'ASSASSIN') {
-                                        bgColor = "bg-[#2c3e50]"; // Dark
-                                        borderColor = "border-[#17202a]";
-                                        textColor = "text-gray-400";
-                                    } else if (card.type === 'NEUTRAL' && card.revealed) { // Only change neutral if revealed
-                                        bgColor = "bg-[#a6acaf]"; // Grey
-                                        borderColor = "border-[#7f8c8d]";
-                                        textColor = "text-gray-700";
+                                        bgStyle = "bg-gradient-to-br from-[#2c3e50] to-[#1a252f]";
+                                        borderStyle = "border-b-[6px] border-[#17202a]";
+                                        textStyle = "text-gray-400";
+                                    } else if (card.type === 'NEUTRAL') {
+                                        bgStyle = "bg-gradient-to-br from-[#95a5a6] to-[#7f8c8d]";
+                                        borderStyle = "border-b-[6px] border-[#626567]";
+                                        textStyle = "text-gray-100";
                                     }
                                 }
 
@@ -916,12 +919,11 @@ export default function CodenamesPage() {
                                         onClick={() => canClick && handleCardClick(i)}
                                         disabled={!canClick}
                                         className={`
-                                            relative aspect-[4/3] rounded-lg flex items-center justify-center p-2 
-                                            text-center font-bold text-xs md:text-sm lg:text-base uppercase 
-                                            transition-all duration-100 shadow-md select-none group
-                                            border-b-[6px] active:border-b-0 active:translate-y-[6px]
-                                            ${bgColor} ${borderColor} ${textColor} ${opacity}
-                                            ${canClick ? 'cursor-pointer hover:-translate-y-1 hover:brightness-110' : 'cursor-default'}
+                                            relative aspect-[4/3] rounded-xl flex items-center justify-center p-3
+                                            text-center font-black text-sm md:text-base lg:text-lg uppercase tracking-wider
+                                            transition-all duration-200 shadow-xl select-none group
+                                            ${bgStyle} ${borderStyle} ${textStyle} ${opacityStyle}
+                                            ${canClick ? 'cursor-pointer hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-[6px]' : 'cursor-default'}
                                         `}
                                     >
                                         <span className={`block w-full break-words leading-tight z-10 font-sans tracking-wide drop-shadow-sm ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-4' : ''}`}>

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCcw, Trophy, ArrowLeft, ArrowRight, Users, Wifi, Copy, Share2, User } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import type { DataConnection } from 'peerjs';
+
 
 type Player = 'X' | 'O';
 type Winner = Player | 'Draw' | null;
@@ -27,7 +27,7 @@ export default function TicTacToePage() {
 
     // Multiplayer State
     const [peerId, setPeerId] = useState<string>('');
-    const [conn, setConn] = useState<DataConnection | null>(null);
+    const [conn, setConn] = useState<any | null>(null);
     const [myPlayer, setMyPlayer] = useState<Player | null>(null);
     const [status, setStatus] = useState<string>('');
     const [copied, setCopied] = useState(false);
@@ -87,7 +87,7 @@ export default function TicTacToePage() {
         setupConnection(connection);
     };
 
-    const setupConnection = (connection: DataConnection) => {
+    const setupConnection = (connection: any) => {
         connection.on('open', () => {
             setStatus('Connected!');
             // Send my name immediately upon connection
