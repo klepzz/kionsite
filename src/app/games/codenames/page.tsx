@@ -878,39 +878,41 @@ export default function CodenamesPage() {
                     </div>
 
                     {/* CARD GRID */}
-                    <div className="flex-1 bg-black/20 p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner overflow-y-auto custom-scrollbar">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 min-h-min content-start max-w-[1200px] mx-auto pb-8">
+                    <div className="flex-1 bg-black/20 p-2 md:p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner flex flex-col min-h-0 overflow-hidden">
+                        <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto">
                             {gameState.cards.map((card, i) => {
+                                // 3D TILE STYLE
                                 // 3D TILE STYLE
                                 const isRevealed = card.revealed || spymasterView;
 
                                 // Base (Unrevealed)
-                                let bgStyle = "bg-gradient-to-br from-[#fdf0d5] to-[#f5e6ca]";
-                                let borderStyle = "border-b-[6px] border-[#d8c29d]";
-                                let textStyle = "text-[#5e503f]";
+                                let bgStyle = "bg-gradient-to-br from-[#fdf0d5] to-[#e6d0a8]";
+                                let borderStyle = "border-b-[4px] md:border-b-[6px] border-[#cbb085]";
+                                let textStyle = "text-[#4a3f35]";
                                 let opacityStyle = isRevealed && !card.revealed ? "opacity-60 saturate-[0.5] scale-95" : "opacity-100";
 
                                 if (isRevealed) {
                                     if (card.type === 'SETEJELER') {
-                                        bgStyle = "bg-gradient-to-br from-[#c0392b] to-[#a93226]";
-                                        borderStyle = "border-b-[6px] border-[#922b21]";
+                                        bgStyle = "bg-gradient-to-br from-[#c0392b] to-[#962d22]";
+                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#7b241c]";
                                         textStyle = "text-red-50 shadow-sm";
                                     } else if (card.type === 'AVEKETLER') {
-                                        bgStyle = "bg-gradient-to-br from-[#2980b9] to-[#2471a3]";
-                                        borderStyle = "border-b-[6px] border-[#1f618d]";
+                                        bgStyle = "bg-gradient-to-br from-[#2980b9] to-[#1f618d]";
+                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#154360]";
                                         textStyle = "text-blue-50 shadow-sm";
                                     } else if (card.type === 'ASSASSIN') {
-                                        bgStyle = "bg-gradient-to-br from-[#2c3e50] to-[#1a252f]";
-                                        borderStyle = "border-b-[6px] border-[#17202a]";
+                                        bgStyle = "bg-gradient-to-br from-[#2c3e50] to-[#17202a]";
+                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#000]";
                                         textStyle = "text-gray-400";
                                     } else if (card.type === 'NEUTRAL') {
                                         bgStyle = "bg-gradient-to-br from-[#95a5a6] to-[#7f8c8d]";
-                                        borderStyle = "border-b-[6px] border-[#626567]";
+                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#626567]";
                                         textStyle = "text-gray-100";
                                     }
                                 }
 
                                 const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
+                                const patternColor = isRevealed ? (card.type === 'SETEJELER' || card.type === 'AVEKETLER' ? 'bg-[radial-gradient(circle,rgba(255,255,255,0.15)_1px,transparent_1px)]' : 'bg-[radial-gradient(circle,rgba(0,0,0,0.1)_1px,transparent_1px)]') : 'bg-[radial-gradient(circle,rgba(0,0,0,0.07)_1px,transparent_1px)]';
 
                                 return (
                                     <motion.button
@@ -919,14 +921,17 @@ export default function CodenamesPage() {
                                         onClick={() => canClick && handleCardClick(i)}
                                         disabled={!canClick}
                                         className={`
-                                            relative aspect-[4/3] rounded-xl flex items-center justify-center p-3
-                                            text-center font-black text-sm md:text-base lg:text-lg uppercase tracking-wider
+                                            relative h-full w-full rounded-xl flex items-center justify-center p-2 
+                                            text-center font-cinzel font-black text-xs sm:text-sm md:text-base lg:text-xl uppercase tracking-wider
                                             transition-all duration-200 shadow-xl select-none group
                                             ${bgStyle} ${borderStyle} ${textStyle} ${opacityStyle}
                                             ${canClick ? 'cursor-pointer hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-[6px]' : 'cursor-default'}
                                         `}
                                     >
-                                        <span className={`block w-full break-words leading-tight z-10 font-sans tracking-wide drop-shadow-sm ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-4' : ''}`}>
+                                        {/* Pattern Overlay */}
+                                        <div className={`absolute inset-0 ${patternColor} [background-size:8px_8px] opacity-100 rounded-xl pointer-events-none`} />
+
+                                        <span className={`relative block w-full break-words leading-tight z-10 tracking-wide drop-shadow-sm ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-4' : ''}`}>
                                             {card.word}
                                         </span>
 
