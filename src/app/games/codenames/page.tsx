@@ -829,55 +829,7 @@ export default function CodenamesPage() {
                     </h1>
                 </div>
 
-                {/* GAME OVER OVERLAY */}
-                <AnimatePresence>
-                    {gameState.winner && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 1 }}
-                            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
-                        >
-                            {/* 1. Image in Foreground - Appear, Stay, Disappear */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: [0, 1, 1, 0], scale: 1 }}
-                                transition={{
-                                    opacity: { duration: 4, times: [0, 0.2, 0.8, 1], ease: "easeInOut" },
-                                    scale: { duration: 4, ease: "easeOut" }
-                                }}
-                                className="absolute inset-0 flex items-center justify-center p-4 z-30 pointer-events-none"
-                            >
-                                <img
-                                    src="/images/game_over.jpg"
-                                    alt="Game Over"
-                                    className="w-full h-full max-h-[80vh] object-contain drop-shadow-2xl rounded-lg"
-                                />
-                            </motion.div>
-
-                            {/* 2. Controls (Text & Button) - Appear after image fades */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 3.5, duration: 1 }} // Start appearing while image fades out
-                                className="relative z-20 flex flex-col items-center gap-6 p-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10"
-                            >
-                                <h1 className={`font-cinzel font-black text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]'} uppercase tracking-widest text-center`}>
-                                    {gameState.teamNames[gameState.winner]}
-                                    <br />
-                                    KAZANDI!
-                                </h1>
-
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="px-12 py-4 bg-white hover:bg-slate-200 text-black font-bold tracking-widest transition-all hover:scale-105 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] cursor-pointer"
-                                >
-                                    TEKRAR OYNA
-                                </button>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* GAME OVER OVERLAY MOVED TO ROOT */}
 
                 <div className="flex items-center gap-2">
                     <button className="bg-slate-900/50 border border-white/5 text-slate-300 px-4 py-2 rounded-full font-bold backdrop-blur-sm hover:bg-slate-800 transition-colors hover:text-white">
@@ -1197,6 +1149,56 @@ export default function CodenamesPage() {
                             ))}
                         </div>
                     </div>
+
+                    {/* GAME OVER OVERLAY (MOVED HERE FOR Z-INDEX FIX) */}
+                    <AnimatePresence>
+                        {gameState.winner && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 1 }}
+                                className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black"
+                            >
+                                {/* 1. Image in Foreground - Appear, Stay, Disappear */}
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: [0, 1, 1, 0], scale: 1 }}
+                                    transition={{
+                                        opacity: { duration: 4, times: [0, 0.2, 0.8, 1], ease: "easeInOut" },
+                                        scale: { duration: 4, ease: "easeOut" }
+                                    }}
+                                    className="absolute inset-0 flex items-center justify-center p-4 z-30 pointer-events-none"
+                                >
+                                    <img
+                                        src="/images/game_over.jpg"
+                                        alt="Game Over"
+                                        className="w-full h-full max-h-[80vh] object-contain drop-shadow-2xl rounded-lg"
+                                    />
+                                </motion.div>
+
+                                {/* 2. Controls (Text & Button) - Appear after image fades */}
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 3.5, duration: 1 }} // Start appearing while image fades out
+                                    className="relative z-20 flex flex-col items-center gap-6 p-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10"
+                                >
+                                    <h1 className={`font-cinzel font-black text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]'} uppercase tracking-widest text-center`}>
+                                        {gameState.teamNames[gameState.winner]}
+                                        <br />
+                                        KAZANDI!
+                                    </h1>
+
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        className="px-12 py-4 bg-white hover:bg-slate-200 text-black font-bold tracking-widest transition-all hover:scale-105 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] cursor-pointer"
+                                    >
+                                        TEKRAR OYNA
+                                    </button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                 </div>
 
