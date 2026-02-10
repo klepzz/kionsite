@@ -397,6 +397,27 @@ export default function CodenamesPage() {
         });
     };
 
+    const processClue = (word: string, number: number) => {
+        setGameState(prev => {
+            const newLog: GameLog = {
+                id: Math.random().toString(36).substr(2, 9),
+                text: `${prev.teamNames[prev.currentTurn]} İPUCU: "${word}" (${number})`,
+                type: 'INFO',
+                timestamp: Date.now()
+            };
+
+            const newState = {
+                ...prev,
+                turnPhase: 'GUESS' as TurnPhase,
+                currentClue: { word, number },
+                guessesRemaining: number + 1,
+                logs: [newLog, ...prev.logs]
+            };
+            broadcastState(newState);
+            return newState;
+        });
+    };
+
     const passTurn = () => {
         setGameState(prev => {
             const newTurn: Team = prev.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
