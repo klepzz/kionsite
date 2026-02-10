@@ -102,8 +102,8 @@ export default function CodenamesPage() {
         guessesRemaining: 0,
         logs: [],
         teamNames: {
-            SETEJELER: 'SETEJELER',
-            AVEKETLER: 'AVEKETLER'
+            SETEJELER: 'TEAM 1',
+            AVEKETLER: 'TEAM 2'
         },
         timerEndTime: null,
         turnCount: 0
