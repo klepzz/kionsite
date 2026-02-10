@@ -54,8 +54,8 @@ interface GameState {
 const TEAMS = {
     SETEJELER: {
         name: 'SETEJELER',
-        color: 'from-orange-500 to-red-600',
-        bg: 'bg-gradient-to-br from-orange-500/20 to-red-600/20',
+        color: 'from-orange-500 to-red-600', // Keep for compatibility if needed, but UI will override
+        bg: 'bg-gradient-to-br from-orange-500/10 to-red-600/10',
         border: 'border-orange-500/50',
         text: 'text-orange-400',
         ring: 'ring-orange-500',
@@ -63,11 +63,11 @@ const TEAMS = {
     },
     AVEKETLER: {
         name: 'AVEKETLER',
-        color: 'from-blue-500 to-cyan-600',
-        bg: 'bg-gradient-to-br from-blue-500/20 to-cyan-600/20',
-        border: 'border-cyan-500/50',
+        color: 'from-cyan-400 to-blue-600',
+        bg: 'bg-gradient-to-br from-cyan-400/10 to-blue-600/10',
+        border: 'border-cyan-400/50',
         text: 'text-cyan-400',
-        ring: 'ring-cyan-500',
+        ring: 'ring-cyan-400',
         winBg: 'bg-slate-950',
     }
 };
@@ -506,14 +506,14 @@ export default function CodenamesPage() {
     if (gameState.phase === 'LOBBY') {
         return (
             <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col">
-                <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-purple-900/20 to-transparent pointer-events-none" />
+                <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
 
                 {/* Header */}
                 <div className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
                     <Link href="/games" className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
                         <ArrowLeft className="w-5 h-5" /> Çıkış
                     </Link>
-                    <h1 className="font-cinzel text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500 tracking-widest drop-shadow-[0_2px_10px_rgba(251,191,36,0.2)]">
+                    <h1 className="font-cinzel text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-white to-orange-400 tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                         KION NAMES
                     </h1>
                     <div className="w-24" /> {/* Spacer */}
@@ -734,19 +734,22 @@ export default function CodenamesPage() {
     const spymasterView = myPlayer?.role === 'SPYMASTER' || !!gameState.winner;
 
     return (
-        <div className={`min-h-screen font-sans transition-colors duration-1000 ${gameState.winner ? (gameState.winner === 'SETEJELER' ? 'bg-orange-950' : 'bg-slate-950') : 'bg-gradient-to-b from-orange-400 to-orange-700'}`}>
+        <div className={`min-h-screen font-sans transition-colors duration-1000 bg-slate-950 overflow-hidden`}>
 
-            {/* Texture Overlay */}
-            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none mix-blend-multiply" />
+            {/* Neon Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent to-slate-950 pointer-events-none" />
+            <div className={`absolute inset-0 opacity-20 pointer-events-none transition-colors duration-1000 ${gameState.currentTurn === 'SETEJELER' ? 'bg-[radial-gradient(circle_at_center,rgba(255,100,0,0.15),transparent_70%)]' : 'bg-[radial-gradient(circle_at_center,rgba(0,255,255,0.15),transparent_70%)]'
+                }`} />
 
             {/* Top Bar (Compact) */}
             <div className="relative z-10 max-w-[1920px] mx-auto p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Link href="/games" className="text-white/70 hover:text-white transition-colors bg-black/20 p-2 rounded-full backdrop-blur-sm">
+                    <Link href="/games" className="text-slate-400 hover:text-white transition-colors bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 hover:border-white/20">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     {isHost && (
-                        <button onClick={() => startGame()} className="p-2 hover:bg-black/20 rounded-full text-white/70 hover:text-white transition-colors backdrop-blur-sm" title="Yeniden Başlat">
+                        <button onClick={() => startGame()} className="p-2 hover:bg-slate-900/50 rounded-full text-slate-400 hover:text-white transition-colors backdrop-blur-sm border border-transparent hover:border-white/20" title="Yeniden Başlat">
                             <RefreshCcw className="w-5 h-5" />
                         </button>
                     )}
@@ -762,7 +765,7 @@ export default function CodenamesPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <button className="bg-black/20 text-white px-4 py-2 rounded-full font-bold backdrop-blur-sm hover:bg-black/30 transition-colors">
+                    <button className="bg-slate-900/50 border border-white/5 text-slate-300 px-4 py-2 rounded-full font-bold backdrop-blur-sm hover:bg-slate-800 transition-colors hover:text-white">
                         Ayarlar
                     </button>
                 </div>
@@ -774,18 +777,17 @@ export default function CodenamesPage() {
                 {/* LEFT: AVEKETLER (Blue) - Operatives & Spymaster */}
                 <div className="w-full lg:w-80 flex flex-col gap-4 order-2 lg:order-1">
                     {/* Score / Header */}
-                    <div className="bg-cyan-600 rounded-xl p-4 shadow-lg border-b-4 border-cyan-800 flex items-center justify-between">
-                        <h2 className="text-white font-black text-xl uppercase tracking-wider">AVEKETLER</h2>
-                        <span className="text-4xl font-black text-white bg-black/20 px-3 py-1 rounded-lg">{aveketlerLeft}</span>
+                    <div className="bg-slate-900/80 rounded-xl p-4 shadow-[0_0_20px_rgba(34,211,238,0.2)] border border-cyan-500/30 flex items-center justify-between">
+                        <h2 className="text-cyan-400 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">AVEKETLER</h2>
+                        <span className="text-4xl font-black text-white bg-cyan-950/50 px-4 py-1 rounded-lg border border-cyan-500/20 shadow-inner">{aveketlerLeft}</span>
                     </div>
 
-                    {/* Operatives Panel */}
-                    <div className="flex-1 bg-cyan-900/40 backdrop-blur-sm rounded-xl border-2 border-cyan-500/30 p-4 flex flex-col">
-                        <h3 className="text-cyan-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-cyan-500/30 pb-1">AJANLAR</h3>
+                    <div className="flex-1 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-white/5 p-4 flex flex-col">
+                        <h3 className="text-cyan-400/70 font-bold text-xs uppercase mb-2 tracking-[0.2em] border-b border-white/5 pb-2">AJANLAR</h3>
                         <div className="flex-1 space-y-2 overflow-y-auto">
                             {aveketlerPlayers.filter(p => p.role === 'OPERATIVE').map(p => (
-                                <div key={p.id} className="flex items-center gap-2 text-white bg-cyan-800/50 p-2 rounded-lg">
-                                    <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
+                                <div key={p.id} className="flex items-center gap-3 text-slate-300 bg-slate-800/40 p-2 rounded-lg border border-transparent hover:border-cyan-500/30 transition-colors">
+                                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
@@ -794,12 +796,12 @@ export default function CodenamesPage() {
                     </div>
 
                     {/* Spymaster Panel */}
-                    <div className="h-40 bg-cyan-900/40 backdrop-blur-sm rounded-xl border-2 border-cyan-500/30 p-4 flex flex-col">
-                        <h3 className="text-cyan-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-cyan-500/30 pb-1">ANLATICI</h3>
+                    <div className="h-40 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-white/5 p-4 flex flex-col">
+                        <h3 className="text-cyan-400/70 font-bold text-xs uppercase mb-2 tracking-[0.2em] border-b border-white/5 pb-2">ANLATICI</h3>
                         <div className="flex-1 space-y-2 overflow-y-auto">
                             {aveketlerPlayers.filter(p => p.role === 'SPYMASTER').map(p => (
-                                <div key={p.id} className="flex items-center gap-2 text-white bg-cyan-800/50 p-2 rounded-lg border border-cyan-400/50">
-                                    <Crown className="w-4 h-4 text-yellow-400" />
+                                <div key={p.id} className="flex items-center gap-2 text-cyan-200 bg-cyan-950/30 p-2 rounded-lg border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
+                                    <Crown className="w-4 h-4 text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" />
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
@@ -818,12 +820,18 @@ export default function CodenamesPage() {
                             <motion.div
                                 initial={{ y: -20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
-                                className={`flex items-center gap-6 px-10 py-4 rounded-xl shadow-2xl border-b-4 ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-100 border-orange-600 text-orange-900' : 'bg-cyan-100 border-cyan-600 text-cyan-900'
+                                className={`flex items-center gap-6 px-12 py-5 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 ${gameState.currentTurn === 'SETEJELER'
+                                        ? 'bg-slate-900/90 shadow-[0_0_20px_rgba(249,115,22,0.15)]'
+                                        : 'bg-slate-900/90 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
                                     }`}
                             >
-                                <span className="font-cinzel font-bold text-lg uppercase tracking-widest opacity-60">İPUCU:</span>
-                                <span className="font-black text-4xl uppercase">{gameState.currentClue.word}</span>
-                                <span className={`w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-xl shadow-inner ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-600' : 'bg-cyan-600'
+                                <span className={`font-cinzel font-bold text-lg uppercase tracking-widest ${gameState.currentTurn === 'SETEJELER' ? 'text-orange-500' : 'text-cyan-500'
+                                    }`}>İPUCU:</span>
+
+                                <span className={`font-black text-4xl uppercase tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${gameState.currentTurn === 'SETEJELER' ? 'text-white' : 'text-white'
+                                    }`}>{gameState.currentClue.word}</span>
+
+                                <span className={`w-12 h-12 flex items-center justify-center rounded-xl text-slate-950 font-black text-2xl shadow-[0_0_15px_currentColor] ${gameState.currentTurn === 'SETEJELER' ? 'bg-orange-500 text-slate-900' : 'bg-cyan-400 text-slate-900'
                                     }`}>
                                     {gameState.currentClue.number}
                                 </span>
@@ -841,24 +849,24 @@ export default function CodenamesPage() {
                                             else sendToHost('GIVE_CLUE', { word, number });
                                         }
                                     }}
-                                    className="flex gap-2 bg-black/40 p-2 rounded-xl backdrop-blur-md border border-white/10 shadow-xl"
+                                    className="flex gap-2 bg-slate-900/80 p-3 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl ring-1 ring-white/5"
                                 >
                                     <input
                                         name="word"
                                         type="text"
-                                        placeholder="İPUCU KELİMESİ"
-                                        className="bg-white/90 border-0 rounded-lg px-4 py-2 text-slate-900 font-bold uppercase focus:ring-2 focus:ring-yellow-400 outline-none w-48 placeholder:text-slate-400"
+                                        placeholder="İPUCU..."
+                                        className="bg-slate-800 border-0 rounded-xl px-4 py-3 text-white font-bold uppercase focus:ring-2 focus:ring-white/20 outline-none w-48 placeholder:text-slate-500"
                                         autoComplete="off"
                                     />
                                     <select
                                         name="number"
-                                        className="bg-white/90 border-0 rounded-lg px-2 py-2 text-slate-900 font-bold focus:ring-2 focus:ring-yellow-400 outline-none w-16 text-center"
+                                        className="bg-slate-800 border-0 rounded-xl px-3 py-3 text-white font-bold focus:ring-2 focus:ring-white/20 outline-none w-20 text-center appearance-none cursor-pointer hover:bg-slate-700"
                                     >
                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <option key={n} value={n}>{n}</option>)}
                                     </select>
                                     <button
                                         type="submit"
-                                        className="bg-green-600 hover:bg-green-500 text-white px-6 rounded-lg font-bold uppercase tracking-wide transition-colors shadow-md"
+                                        className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 rounded-xl font-black uppercase tracking-wide transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]"
                                     >
                                         VER
                                     </button>
@@ -870,7 +878,7 @@ export default function CodenamesPage() {
                         {isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS' && (
                             <button
                                 onClick={() => isHost ? passTurn() : sendToHost('END_TURN')}
-                                className="ml-4 bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-bold uppercase shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition-all"
+                                className="ml-4 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/50 hover:border-red-500 px-6 py-3 rounded-xl font-bold uppercase shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_25px_rgba(239,68,68,0.3)] transition-all"
                             >
                                 PAS GEÇ
                             </button>
@@ -878,41 +886,69 @@ export default function CodenamesPage() {
                     </div>
 
                     {/* CARD GRID */}
-                    <div className="flex-1 bg-black/20 p-2 md:p-4 rounded-3xl backdrop-blur-sm border border-white/5 shadow-inner flex flex-col min-h-0 overflow-hidden">
-                        <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto">
+                    <div className="flex-1 bg-slate-900/30 p-2 md:p-6 rounded-3xl backdrop-blur-sm border border-white/5 flex flex-col min-h-0 overflow-hidden relative">
+                        {/* Grid decorative corners */}
+                        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/20 rounded-tl-xl" />
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/20 rounded-tr-xl" />
+                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/20 rounded-bl-xl" />
+                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/20 rounded-br-xl" />
+
+                        <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto z-10">
                             {gameState.cards.map((card, i) => {
                                 // 3D TILE STYLE
-                                // 3D TILE STYLE
+                                // 3D / NEON TILE STYLE
                                 const isRevealed = card.revealed || spymasterView;
 
-                                // Base (Unrevealed)
-                                let bgStyle = "bg-gradient-to-br from-[#fdf0d5] to-[#e6d0a8]";
-                                let borderStyle = "border-b-[4px] md:border-b-[6px] border-[#cbb085]";
-                                let textStyle = "text-[#4a3f35]";
-                                let opacityStyle = isRevealed && !card.revealed ? "opacity-60 saturate-[0.5] scale-95" : "opacity-100";
+                                // Base (Unrevealed) - High Tech Metallic/Slate
+                                let bgStyle = "bg-slate-800/80";
+                                let borderStyle = "border border-white/10 hover:border-white/30";
+                                let textStyle = "text-slate-300 group-hover:text-white";
+                                let shadowStyle = "shadow-lg";
+                                let opacityStyle = "opacity-100";
+                                let glowEffect = "";
 
                                 if (isRevealed) {
-                                    if (card.type === 'SETEJELER') {
-                                        bgStyle = "bg-gradient-to-br from-[#c0392b] to-[#962d22]";
-                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#7b241c]";
-                                        textStyle = "text-red-50 shadow-sm";
-                                    } else if (card.type === 'AVEKETLER') {
-                                        bgStyle = "bg-gradient-to-br from-[#2980b9] to-[#1f618d]";
-                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#154360]";
-                                        textStyle = "text-blue-50 shadow-sm";
-                                    } else if (card.type === 'ASSASSIN') {
-                                        bgStyle = "bg-gradient-to-br from-[#2c3e50] to-[#17202a]";
-                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#000]";
-                                        textStyle = "text-gray-400";
-                                    } else if (card.type === 'NEUTRAL') {
-                                        bgStyle = "bg-gradient-to-br from-[#95a5a6] to-[#7f8c8d]";
-                                        borderStyle = "border-b-[4px] md:border-b-[6px] border-[#626567]";
-                                        textStyle = "text-gray-100";
+                                    if (!card.revealed) {
+                                        // Spymaster View of Unrevealed Cards - Subtle hint
+                                        if (card.type === 'SETEJELER') {
+                                            borderStyle = "border-2 border-orange-500/30";
+                                            textStyle = "text-orange-200";
+                                        } else if (card.type === 'AVEKETLER') {
+                                            borderStyle = "border-2 border-cyan-500/30";
+                                            textStyle = "text-cyan-200";
+                                        } else if (card.type === 'ASSASSIN') {
+                                            borderStyle = "border-2 border-slate-900";
+                                            textStyle = "text-slate-500";
+                                            bgStyle = "bg-black/80";
+                                        }
+                                        opacityStyle = "opacity-70 saturate-[0.8]";
+                                    } else {
+                                        // Fully Revealed
+                                        if (card.type === 'SETEJELER') {
+                                            bgStyle = "bg-orange-600/20";
+                                            borderStyle = "border-2 border-orange-500";
+                                            textStyle = "text-white font-black drop-shadow-[0_0_5px_rgba(249,115,22,1)]";
+                                            glowEffect = "shadow-[0_0_30px_rgba(249,115,22,0.4),inset_0_0_20px_rgba(249,115,22,0.2)]";
+                                        } else if (card.type === 'AVEKETLER') {
+                                            bgStyle = "bg-cyan-600/20";
+                                            borderStyle = "border-2 border-cyan-400";
+                                            textStyle = "text-white font-black drop-shadow-[0_0_5px_rgba(34,211,238,1)]";
+                                            glowEffect = "shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_20px_rgba(34,211,238,0.2)]";
+                                        } else if (card.type === 'ASSASSIN') {
+                                            bgStyle = "bg-black";
+                                            borderStyle = "border-2 border-red-900";
+                                            textStyle = "text-gray-500 line-through decoration-red-900 decoration-4";
+                                            glowEffect = "shadow-[0_0_50px_rgba(0,0,0,0.8)]";
+                                        } else if (card.type === 'NEUTRAL') {
+                                            bgStyle = "bg-slate-800/50";
+                                            borderStyle = "border border-[#d4af37]/40"; // Gold hint for 'Civilian'
+                                            textStyle = "text-[#d4af37]/60";
+                                            glowEffect = "shadow-none";
+                                        }
                                     }
                                 }
 
                                 const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
-                                const patternColor = isRevealed ? (card.type === 'SETEJELER' || card.type === 'AVEKETLER' ? 'bg-[radial-gradient(circle,rgba(255,255,255,0.15)_1px,transparent_1px)]' : 'bg-[radial-gradient(circle,rgba(0,0,0,0.1)_1px,transparent_1px)]') : 'bg-[radial-gradient(circle,rgba(0,0,0,0.07)_1px,transparent_1px)]';
 
                                 return (
                                     <motion.button
@@ -922,21 +958,26 @@ export default function CodenamesPage() {
                                         disabled={!canClick}
                                         className={`
                                             relative h-full w-full rounded-xl flex items-center justify-center p-2 
-                                            text-center font-cinzel font-black text-xs sm:text-sm md:text-base lg:text-xl uppercase tracking-wider
-                                            transition-all duration-200 shadow-xl select-none group
-                                            ${bgStyle} ${borderStyle} ${textStyle} ${opacityStyle}
-                                            ${canClick ? 'cursor-pointer hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-[6px]' : 'cursor-default'}
+                                            text-center font-sans text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-widest
+                                            transition-all duration-300 select-none group overflow-hidden
+                                            ${bgStyle} ${borderStyle} ${textStyle} ${shadowStyle} ${opacityStyle} ${glowEffect}
+                                            ${canClick ? 'cursor-pointer hover:scale-[1.02] hover:bg-slate-700/80 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'cursor-default'}
                                         `}
                                     >
-                                        {/* Pattern Overlay */}
-                                        <div className={`absolute inset-0 ${patternColor} [background-size:8px_8px] opacity-100 rounded-xl pointer-events-none`} />
+                                        {/* Scanline Effect */}
+                                        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20" />
 
-                                        <span className={`relative block w-full break-words leading-tight z-10 tracking-wide drop-shadow-sm ${card.revealed && card.type === 'ASSASSIN' ? 'line-through decoration-red-600 decoration-4' : ''}`}>
+                                        {/* Tech Corners for Unrevealed */}
+                                        {!card.revealed && (
+                                            <>
+                                                <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/20" />
+                                                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/20" />
+                                            </>
+                                        )}
+
+                                        <span className={`relative block w-full break-words leading-tight z-10 font-bold ${canClick ? 'group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}>
                                             {card.word}
                                         </span>
-
-                                        {/* Inner Bevel Highlight */}
-                                        <div className="absolute inset-x-0 top-0 h-[2px] bg-white/30 rounded-t-lg pointer-events-none" />
                                     </motion.button>
                                 );
                             })}
@@ -947,18 +988,17 @@ export default function CodenamesPage() {
                 {/* RIGHT: SETEJELER (Red) + LOGS */}
                 <div className="w-full lg:w-80 flex flex-col gap-4 order-3">
                     {/* Score / Header */}
-                    <div className="bg-orange-600 rounded-xl p-4 shadow-lg border-b-4 border-orange-800 flex items-center justify-between">
-                        <span className="text-4xl font-black text-white bg-black/20 px-3 py-1 rounded-lg">{setejelerLeft}</span>
-                        <h2 className="text-white font-black text-xl uppercase tracking-wider">SETEJELER</h2>
+                    <div className="bg-slate-900/80 rounded-xl p-4 shadow-[0_0_20px_rgba(249,115,22,0.2)] border border-orange-500/30 flex items-center justify-between">
+                        <span className="text-4xl font-black text-white bg-orange-950/50 px-4 py-1 rounded-lg border border-orange-500/20 shadow-inner">{setejelerLeft}</span>
+                        <h2 className="text-orange-500 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]">SETEJELER</h2>
                     </div>
 
-                    {/* Operatives Panel */}
-                    <div className="flex-1 bg-orange-900/40 backdrop-blur-sm rounded-xl border-2 border-orange-500/30 p-4 flex flex-col">
-                        <h3 className="text-orange-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-orange-500/30 pb-1">AJANLAR</h3>
+                    <div className="flex-1 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-white/5 p-4 flex flex-col">
+                        <h3 className="text-orange-400/70 font-bold text-xs uppercase mb-2 tracking-[0.2em] border-b border-white/5 pb-2">AJANLAR</h3>
                         <div className="flex-1 space-y-2 overflow-y-auto">
                             {setejelerPlayers.filter(p => p.role === 'OPERATIVE').map(p => (
-                                <div key={p.id} className="flex items-center gap-2 text-white bg-orange-800/50 p-2 rounded-lg">
-                                    <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
+                                <div key={p.id} className="flex items-center gap-3 text-slate-300 bg-slate-800/40 p-2 rounded-lg border border-transparent hover:border-orange-500/30 transition-colors">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/50 flex items-center justify-center font-bold text-xs">{p.name.charAt(0)}</div>
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
@@ -967,12 +1007,12 @@ export default function CodenamesPage() {
                     </div>
 
                     {/* Spymaster Panel */}
-                    <div className="h-32 bg-orange-900/40 backdrop-blur-sm rounded-xl border-2 border-orange-500/30 p-4 flex flex-col">
-                        <h3 className="text-orange-200 font-bold text-xs uppercase mb-2 tracking-widest border-b border-orange-500/30 pb-1">ANLATICI</h3>
+                    <div className="h-32 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-white/5 p-4 flex flex-col">
+                        <h3 className="text-orange-400/70 font-bold text-xs uppercase mb-2 tracking-[0.2em] border-b border-white/5 pb-2">ANLATICI</h3>
                         <div className="flex-1 space-y-2 overflow-y-auto">
                             {setejelerPlayers.filter(p => p.role === 'SPYMASTER').map(p => (
-                                <div key={p.id} className="flex items-center gap-2 text-white bg-orange-800/50 p-2 rounded-lg border border-orange-400/50">
-                                    <Crown className="w-4 h-4 text-yellow-400" />
+                                <div key={p.id} className="flex items-center gap-2 text-orange-200 bg-orange-950/30 p-2 rounded-lg border border-orange-500/30 shadow-[0_0_10px_rgba(249,115,22,0.1)]">
+                                    <Crown className="w-4 h-4 text-orange-400 drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]" />
                                     <span className="font-medium text-sm truncate">{p.name}</span>
                                 </div>
                             ))}
