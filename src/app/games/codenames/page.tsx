@@ -111,6 +111,8 @@ export default function CodenamesPage() {
     const searchParams = useSearchParams();
     const gameIdParam = searchParams.get('gameId');
 
+    const [debugInfo, setDebugInfo] = useState<string>('Ready'); // DEBUG STATE
+
     // --- BAŞLANGIÇ (INIT) ---
 
     useEffect(() => {
@@ -500,29 +502,25 @@ export default function CodenamesPage() {
     const handleCardClick = (index: number) => {
         console.log('handleCardClick triggered for index:', index); // DEBUG
 
-        if (gameState.phase !== 'PLAYING') {
-            console.log('Click ignored: Game phase is', gameState.phase); // DEBUG
-            return;
+        let failReason = '';
+        if (gameState.phase !== 'PLAYING') failReason = `Game Phase: ${gameState.phase}`;
+        else if (gameState.winner) failReason = 'Game Over';
+        else {
+            const player = gameState.players.find(p => p.id === myPeerId);
+            if (!player) failReason = 'Player Not Found';
+            else if (player.team !== gameState.currentTurn) failReason = `Not My Turn (My:${player.team}, Cur:${gameState.currentTurn})`;
+            else if (player.role !== 'OPERATIVE') failReason = `Role: ${player.role} (Must be OPERATIVE)`;
+            else if (gameState.turnPhase !== 'GUESS') failReason = `Turn Phase: ${gameState.turnPhase} (Must be GUESS)`;
         }
-        if (gameState.winner) {
-            console.log('Click ignored: Game has a winner'); // DEBUG
+
+        if (failReason) {
+            const msg = `IGNORED: ${failReason}`;
+            console.log(msg);
+            setDebugInfo(msg);
             return;
         }
 
-        // Sadece sırası gelen takımdaki oyuncular tıklayabilir mi?
-        // Oyunun akıcılığı için herkes tıklayabilsin ama host'ta kontrol edilsin.
-        // Daha sıkı kural: Sadece kendi turunda tıklayabilirsin.
-        const myPlayer = gameState.players.find(p => p.id === myPeerId);
-        if (!myPlayer) {
-            console.log('Click ignored: Player not found'); // DEBUG
-            return;
-        }
-
-        if (myPlayer.team !== gameState.currentTurn) {
-            console.log(`Click ignored: Not my team's turn. My: ${myPlayer.team}, Current: ${gameState.currentTurn}`); // DEBUG
-            // Opsiyonel: Uyarı verilebilir "Sıra sizde değil"
-            return;
-        }
+        setDebugInfo(`SUCCESS: Revealing Card ${index}`);
 
         if (isHost) {
             console.log('Processing reveal as Host'); // DEBUG
@@ -1033,7 +1031,9 @@ export default function CodenamesPage() {
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             console.log('Parent Div onClick fired for index:', i, 'canClick:', canClick); // DEBUG
-                                            if (canClick) {
+                                            if (!canClick) {
+                                                setDebugInfo(`Card Click Prevented: canClick=FALSE. Rev:${card.revealed} Win:${!!gameState.winner} Turn:${isMyTurn} Role:${myPlayer?.role} Phase:${gameState.turnPhase}`);
+                                            } else {
                                                 handleCardClick(i);
                                             }
                                         }}
@@ -1202,6 +1202,20 @@ export default function CodenamesPage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+                    {/* DEBUG PANEL */}
+                    <div className="fixed bottom-4 right-4 z-[99999] bg-black/90 text-green-400 p-4 font-mono text-[10px] md:text-xs rounded border border-green-500 shadow-2xl pointer-events-none opacity-80 backdrop-blur-md">
+                        <p className="font-bold border-b border-green-500/50 mb-1">-- DIAGNOSTICS --</p>
+                        <div className="grid grid-cols-2 gap-x-4">
+                            <p>Role: <span className="text-white">{myPlayer?.role || 'N/A'}</span></p>
+                            <p>Team: <span className="text-white">{myPlayer?.team || 'N/A'}</span></p>
+                            <p>Turn: <span className="text-white">{gameState.currentTurn}</span></p>
+                            <p>Phase: <span className="text-white">{gameState.turnPhase}</span></p>
+                            <p>Host: <span className="text-white">{isHost ? 'YES' : 'NO'}</span></p>
+                        </div>
+                        <div className="mt-2 border-t border-green-500/30 pt-1">
+                            <p className="font-bold text-yellow-400">{debugInfo}</p>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -1209,3 +1223,5 @@ export default function CodenamesPage() {
         </div>
     );
 }
+
+// --- UTILS ---
