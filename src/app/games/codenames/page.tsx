@@ -684,7 +684,7 @@ export default function CodenamesPage() {
                                                     type="text"
                                                     value={gameState.teamNames.SETEJELER}
                                                     onChange={(e) => updateTeamName('SETEJELER', e.target.value)}
-                                                    className="bg-transparent border-b-2 border-orange-500/30 focus:border-orange-500 outline-none w-full uppercase"
+                                                    className="bg-transparent border-b-2 border-orange-500/30 focus:border-orange-500 outline-none max-w-[200px] uppercase"
                                                 />
                                             ) : (
                                                 gameState.teamNames.SETEJELER
@@ -760,7 +760,7 @@ export default function CodenamesPage() {
                                                     type="text"
                                                     value={gameState.teamNames.AVEKETLER}
                                                     onChange={(e) => updateTeamName('AVEKETLER', e.target.value)}
-                                                    className="bg-transparent border-b-2 border-cyan-500/30 focus:border-cyan-500 outline-none w-full uppercase"
+                                                    className="bg-transparent border-b-2 border-cyan-500/30 focus:border-cyan-500 outline-none max-w-[200px] uppercase"
                                                 />
                                             ) : (
                                                 gameState.teamNames.AVEKETLER
