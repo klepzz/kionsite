@@ -397,16 +397,7 @@ export default function CodenamesPage() {
         });
     };
 
-    const updatePlayerRole = (playerId: string, role: 'SPYMASTER' | 'OPERATIVE') => {
-        setGameState(prev => {
-            const updatedPlayers = prev.players.map(p =>
-                p.id === playerId ? { ...p, role } : p
-            );
-            const newState = { ...prev, players: updatedPlayers };
-            broadcastState(newState);
-            return newState;
-        });
-    };
+
 
     const processClue = (word: string, number: number) => {
         setGameState(prev => {
