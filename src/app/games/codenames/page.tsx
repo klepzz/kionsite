@@ -801,13 +801,57 @@ export default function CodenamesPage() {
                 </div>
 
                 {/* Status Message / Title */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center">
+                <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center z-50">
                     <h1 className="font-cinzel font-black text-3xl md:text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] tracking-wide uppercase">
-                        {gameState.winner ? `${gameState.teamNames[gameState.winner]} KAZANDI!` :
+                        {gameState.winner ? (
+                            // Winner text moved to overlay
+                            null
+                        ) :
                             gameState.turnPhase === 'CLUE' ? `${gameState.teamNames[gameState.currentTurn]} İPUCU BEKLENİYOR` :
                                 `${gameState.teamNames[gameState.currentTurn]} TAHMİN EDİYOR`}
                     </h1>
                 </div>
+
+                {/* GAME OVER OVERLAY */}
+                <AnimatePresence>
+                    {gameState.winner && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1.5, ease: "easeInOut" }} // Slow fade in
+                            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm"
+                        >
+                            <motion.img
+                                src="/images/game_over.jpg"
+                                alt="Game Over"
+                                initial={{ scale: 1.1, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 2, ease: "easeOut" }} // Slow scale down
+                                className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay"
+                            />
+
+                            <motion.div
+                                initial={{ y: 50, opacity: 0, scale: 0.9 }}
+                                animate={{ y: 0, opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.5, duration: 1, type: "spring" }}
+                                className="relative z-10 flex flex-col items-center gap-8"
+                            >
+                                <h1 className={`font-cinzel font-black text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_50px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_50px_rgba(34,211,238,0.8)]'} uppercase tracking-widest`}>
+                                    {gameState.teamNames[gameState.winner]}
+                                    <br />
+                                    KAZANDI!
+                                </h1>
+
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="px-12 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-bold tracking-widest transition-all hover:scale-105 backdrop-blur-md"
+                                >
+                                    TEKRAR OYNA
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <div className="flex items-center gap-2">
                     <button className="bg-slate-900/50 border border-white/5 text-slate-300 px-4 py-2 rounded-full font-bold backdrop-blur-sm hover:bg-slate-800 transition-colors hover:text-white">
