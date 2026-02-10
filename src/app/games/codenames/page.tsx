@@ -47,6 +47,10 @@ interface GameState {
     currentClue: { word: string; number: number } | null;
     guessesRemaining: number;
     logs: GameLog[];
+    teamNames: {
+        SETEJELER: string;
+        AVEKETLER: string;
+    };
 }
 
 // --- SABİTLER ---
@@ -92,7 +96,11 @@ export default function CodenamesPage() {
         players: [],
         currentClue: null,
         guessesRemaining: 0,
-        logs: []
+        logs: [],
+        teamNames: {
+            SETEJELER: 'SETEJELER',
+            AVEKETLER: 'AVEKETLER'
+        }
     });
 
     // PeerJS Referansları
@@ -203,7 +211,25 @@ export default function CodenamesPage() {
             passTurn();
         } else if (data.type === 'REVEAL_CARD') {
             processCardReveal(data.index);
+        } else if (data.type === 'UPDATE_TEAM_NAME') {
+            // Host bu mesajı almaz, kendi state'ini günceller ve yayınlar.
+            // Ancak bir Guest (yetkisi varsa) gönderirse işleyebiliriz.
+            // Şimdilik sadece Host UI üzerinden güncelleyeceği için buraya gerek yok.
         }
+    };
+
+    const updateTeamName = (teamKey: Team, newName: string) => {
+        setGameState(prev => {
+            const newState = {
+                ...prev,
+                teamNames: {
+                    ...prev.teamNames,
+                    [teamKey]: newName
+                }
+            };
+            broadcastState(newState);
+            return newState;
+        });
     };
 
     const updatePlayerRole = (playerId: string, role: 'SPYMASTER' | 'OPERATIVE') => {
@@ -310,6 +336,7 @@ export default function CodenamesPage() {
         setGameState(newState);
         broadcastState(newState);
         addLog('Oyun Başladı! İyi şanslar.', 'INFO');
+        addLog(`${newState.teamNames[starter]} başlıyor.`, 'INFO');
     };
 
     const addLog = (text: string, type: GameLog['type'] = 'INFO') => {
@@ -355,7 +382,7 @@ export default function CodenamesPage() {
             const newTurn: Team = prev.currentTurn === 'SETEJELER' ? 'AVEKETLER' : 'SETEJELER';
             const newLog: GameLog = {
                 id: Math.random().toString(36).substr(2, 9),
-                text: `${prev.currentTurn} turu pas geçti.`,
+                text: `${prev.teamNames[prev.currentTurn]} turu pas geçti.`,
                 type: 'WARNING',
                 timestamp: Date.now()
             };
@@ -589,7 +616,16 @@ export default function CodenamesPage() {
                                     <div className="relative p-6 flex flex-col h-full min-h-[400px]">
                                         <h3 className="text-3xl font-black text-orange-500 mb-6 flex items-center gap-3">
                                             <Users className="w-8 h-8" />
-                                            SETEJELER
+                                            {isHost ? (
+                                                <input
+                                                    type="text"
+                                                    value={gameState.teamNames.SETEJELER}
+                                                    onChange={(e) => updateTeamName('SETEJELER', e.target.value)}
+                                                    className="bg-transparent border-b-2 border-orange-500/30 focus:border-orange-500 outline-none w-full uppercase"
+                                                />
+                                            ) : (
+                                                gameState.teamNames.SETEJELER
+                                            )}
                                         </h3>
 
                                         <div className="flex-1 space-y-2 mb-6">
@@ -645,7 +681,7 @@ export default function CodenamesPage() {
                                             disabled={myPlayer?.team === 'SETEJELER'}
                                             className="w-full py-4 rounded-xl border-2 border-orange-500/30 font-bold text-orange-400 hover:bg-orange-500 hover:text-white transition-all disabled:bg-orange-500/10 disabled:text-orange-600 disabled:border-transparent"
                                         >
-                                            {myPlayer?.team === 'SETEJELER' ? 'KATILDIN' : 'SETEJELERE KATIL'}
+                                            {myPlayer?.team === 'SETEJELER' ? 'KATILDIN' : `${gameState.teamNames.SETEJELER}'E KATIL`}
                                         </button>
                                     </div>
                                 </div>
@@ -656,7 +692,16 @@ export default function CodenamesPage() {
                                     <div className="relative p-6 flex flex-col h-full min-h-[400px]">
                                         <h3 className="text-3xl font-black text-cyan-400 mb-6 flex items-center gap-3">
                                             <Users className="w-8 h-8" />
-                                            AVEKETLER
+                                            {isHost ? (
+                                                <input
+                                                    type="text"
+                                                    value={gameState.teamNames.AVEKETLER}
+                                                    onChange={(e) => updateTeamName('AVEKETLER', e.target.value)}
+                                                    className="bg-transparent border-b-2 border-cyan-500/30 focus:border-cyan-500 outline-none w-full uppercase"
+                                                />
+                                            ) : (
+                                                gameState.teamNames.AVEKETLER
+                                            )}
                                         </h3>
 
                                         <div className="flex-1 space-y-2 mb-6">
@@ -712,7 +757,7 @@ export default function CodenamesPage() {
                                             disabled={myPlayer?.team === 'AVEKETLER'}
                                             className="w-full py-4 rounded-xl border-2 border-cyan-500/30 font-bold text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all disabled:bg-cyan-500/10 disabled:text-cyan-600 disabled:border-transparent"
                                         >
-                                            {myPlayer?.team === 'AVEKETLER' ? 'KATILDIN' : 'AVEKETLERE KATIL'}
+                                            {myPlayer?.team === 'AVEKETLER' ? 'KATILDIN' : `${gameState.teamNames.AVEKETLER}'E KATIL`}
                                         </button>
                                     </div>
                                 </div>
@@ -758,9 +803,9 @@ export default function CodenamesPage() {
                 {/* Status Message / Title */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center">
                     <h1 className="font-cinzel font-black text-3xl md:text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] tracking-wide uppercase">
-                        {gameState.winner ? `${gameState.winner} KAZANDI!` :
-                            gameState.turnPhase === 'CLUE' ? `${gameState.currentTurn} İPUCU BEKLENİYOR` :
-                                `${gameState.currentTurn} TAHMİN EDİYOR`}
+                        {gameState.winner ? `${gameState.teamNames[gameState.winner]} KAZANDI!` :
+                            gameState.turnPhase === 'CLUE' ? `${gameState.teamNames[gameState.currentTurn]} İPUCU BEKLENİYOR` :
+                                `${gameState.teamNames[gameState.currentTurn]} TAHMİN EDİYOR`}
                     </h1>
                 </div>
 
@@ -778,7 +823,7 @@ export default function CodenamesPage() {
                 <div className="w-full lg:w-80 flex flex-col gap-4 order-2 lg:order-1">
                     {/* Score / Header */}
                     <div className="bg-slate-900/80 rounded-xl p-4 shadow-[0_0_20px_rgba(34,211,238,0.2)] border border-cyan-500/30 flex items-center justify-between">
-                        <h2 className="text-cyan-400 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">AVEKETLER</h2>
+                        <h2 className="text-cyan-400 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">{gameState.teamNames.AVEKETLER}</h2>
                         <span className="text-4xl font-black text-white bg-cyan-950/50 px-4 py-1 rounded-lg border border-cyan-500/20 shadow-inner">{aveketlerLeft}</span>
                     </div>
 
@@ -821,8 +866,8 @@ export default function CodenamesPage() {
                                 initial={{ y: -20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 className={`flex items-center gap-6 px-12 py-5 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 ${gameState.currentTurn === 'SETEJELER'
-                                        ? 'bg-slate-900/90 shadow-[0_0_20px_rgba(249,115,22,0.15)]'
-                                        : 'bg-slate-900/90 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
+                                    ? 'bg-slate-900/90 shadow-[0_0_20px_rgba(249,115,22,0.15)]'
+                                    : 'bg-slate-900/90 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
                                     }`}
                             >
                                 <span className={`font-cinzel font-bold text-lg uppercase tracking-widest ${gameState.currentTurn === 'SETEJELER' ? 'text-orange-500' : 'text-cyan-500'
@@ -909,40 +954,44 @@ export default function CodenamesPage() {
 
                                 if (isRevealed) {
                                     if (!card.revealed) {
-                                        // Spymaster View of Unrevealed Cards - Subtle hint
+                                        // Spymaster View of Unrevealed Cards - STRONGER HINT
                                         if (card.type === 'SETEJELER') {
-                                            borderStyle = "border-2 border-orange-500/30";
-                                            textStyle = "text-orange-200";
-                                        } else if (card.type === 'AVEKETLER') {
-                                            borderStyle = "border-2 border-cyan-500/30";
-                                            textStyle = "text-cyan-200";
-                                        } else if (card.type === 'ASSASSIN') {
-                                            borderStyle = "border-2 border-slate-900";
-                                            textStyle = "text-slate-500";
-                                            bgStyle = "bg-black/80";
-                                        }
-                                        opacityStyle = "opacity-70 saturate-[0.8]";
-                                    } else {
-                                        // Fully Revealed
-                                        if (card.type === 'SETEJELER') {
-                                            bgStyle = "bg-orange-600/20";
+                                            bgStyle = "bg-orange-950/40";
                                             borderStyle = "border-2 border-orange-500";
-                                            textStyle = "text-white font-black drop-shadow-[0_0_5px_rgba(249,115,22,1)]";
-                                            glowEffect = "shadow-[0_0_30px_rgba(249,115,22,0.4),inset_0_0_20px_rgba(249,115,22,0.2)]";
+                                            textStyle = "text-orange-100 font-bold";
+                                            glowEffect = "shadow-[0_0_15px_rgba(249,115,22,0.15)]";
                                         } else if (card.type === 'AVEKETLER') {
-                                            bgStyle = "bg-cyan-600/20";
+                                            bgStyle = "bg-cyan-950/40";
                                             borderStyle = "border-2 border-cyan-400";
-                                            textStyle = "text-white font-black drop-shadow-[0_0_5px_rgba(34,211,238,1)]";
-                                            glowEffect = "shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_20px_rgba(34,211,238,0.2)]";
+                                            textStyle = "text-cyan-100 font-bold";
+                                            glowEffect = "shadow-[0_0_15px_rgba(34,211,238,0.15)]";
+                                        } else if (card.type === 'ASSASSIN') {
+                                            borderStyle = "border-2 border-slate-700 dashed";
+                                            textStyle = "text-slate-400";
+                                            bgStyle = "bg-black/90";
+                                        }
+                                        opacityStyle = "opacity-90"; // Reduced transparency for better visibility
+                                    } else {
+                                        // Fully Revealed - BOLD & NEON
+                                        if (card.type === 'SETEJELER') {
+                                            bgStyle = "bg-orange-600/90"; // Much stronger fill
+                                            borderStyle = "border-2 border-orange-400";
+                                            textStyle = "text-white font-black drop-shadow-md";
+                                            glowEffect = "shadow-[0_0_30px_rgba(249,115,22,0.6)]";
+                                        } else if (card.type === 'AVEKETLER') {
+                                            bgStyle = "bg-cyan-600/90"; // Much stronger fill
+                                            borderStyle = "border-2 border-cyan-300";
+                                            textStyle = "text-white font-black drop-shadow-md";
+                                            glowEffect = "shadow-[0_0_30px_rgba(34,211,238,0.6)]";
                                         } else if (card.type === 'ASSASSIN') {
                                             bgStyle = "bg-black";
-                                            borderStyle = "border-2 border-red-900";
-                                            textStyle = "text-gray-500 line-through decoration-red-900 decoration-4";
-                                            glowEffect = "shadow-[0_0_50px_rgba(0,0,0,0.8)]";
+                                            borderStyle = "border-4 border-red-600 double";
+                                            textStyle = "text-red-500 line-through decoration-4";
+                                            glowEffect = "shadow-[0_0_50px_rgba(220,38,38,0.5)]";
                                         } else if (card.type === 'NEUTRAL') {
-                                            bgStyle = "bg-slate-800/50";
-                                            borderStyle = "border border-[#d4af37]/40"; // Gold hint for 'Civilian'
-                                            textStyle = "text-[#d4af37]/60";
+                                            bgStyle = "bg-slate-700/80";
+                                            borderStyle = "border-2 border-[#d4af37]/30";
+                                            textStyle = "text-[#d4af37]/80";
                                             glowEffect = "shadow-none";
                                         }
                                     }
@@ -990,7 +1039,7 @@ export default function CodenamesPage() {
                     {/* Score / Header */}
                     <div className="bg-slate-900/80 rounded-xl p-4 shadow-[0_0_20px_rgba(249,115,22,0.2)] border border-orange-500/30 flex items-center justify-between">
                         <span className="text-4xl font-black text-white bg-orange-950/50 px-4 py-1 rounded-lg border border-orange-500/20 shadow-inner">{setejelerLeft}</span>
-                        <h2 className="text-orange-500 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]">SETEJELER</h2>
+                        <h2 className="text-orange-500 font-black text-xl uppercase tracking-widest drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]">{gameState.teamNames.SETEJELER}</h2>
                     </div>
 
                     <div className="flex-1 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-white/5 p-4 flex flex-col">
