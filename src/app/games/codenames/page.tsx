@@ -818,25 +818,31 @@ export default function CodenamesPage() {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ duration: 1.5, ease: "easeInOut" }} // Slow fade in
-                            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm"
+                            transition={{ duration: 1 }}
+                            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
                         >
-                            <motion.img
-                                src="/images/game_over.jpg"
-                                alt="Game Over"
-                                initial={{ scale: 1.1, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ duration: 2, ease: "easeOut" }} // Slow scale down
-                                className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay"
-                            />
-
+                            {/* 1. Image in Foreground */}
                             <motion.div
-                                initial={{ y: 50, opacity: 0, scale: 0.9 }}
-                                animate={{ y: 0, opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.5, duration: 1, type: "spring" }}
-                                className="relative z-10 flex flex-col items-center gap-8"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 3, ease: "easeOut" }} // Slow entrance
+                                className="relative w-full max-w-5xl h-[60vh] flex items-center justify-center p-4 z-10"
                             >
-                                <h1 className={`font-cinzel font-black text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_50px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_50px_rgba(34,211,238,0.8)]'} uppercase tracking-widest`}>
+                                <img
+                                    src="/images/game_over.jpg"
+                                    alt="Game Over"
+                                    className="w-full h-full object-contain drop-shadow-2xl rounded-lg"
+                                />
+                            </motion.div>
+
+                            {/* 2. Controls (Text & Button) - Appear after delay */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 4, duration: 1 }} // Wait for image to settle
+                                className="relative z-20 flex flex-col items-center gap-6 mt-8 p-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10"
+                            >
+                                <h1 className={`font-cinzel font-black text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]'} uppercase tracking-widest text-center`}>
                                     {gameState.teamNames[gameState.winner]}
                                     <br />
                                     KAZANDI!
@@ -844,7 +850,7 @@ export default function CodenamesPage() {
 
                                 <button
                                     onClick={() => window.location.reload()}
-                                    className="px-12 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-bold tracking-widest transition-all hover:scale-105 backdrop-blur-md"
+                                    className="px-12 py-4 bg-white hover:bg-slate-200 text-black font-bold tracking-widest transition-all hover:scale-105 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                                 >
                                     TEKRAR OYNA
                                 </button>
