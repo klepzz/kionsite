@@ -1059,15 +1059,15 @@ export default function CodenamesPage() {
 
                                 return (
                                     <div key={card.id} className="relative h-full w-full perspective-1000 group">
-                                        <motion.button
+                                        <motion.div
                                             layoutId={`card-${card.id}`}
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent bubbling
+                                                console.log('Card onClick fired for index:', i, 'canClick:', canClick); // DEBUG
                                                 if (canClick) {
-                                                    // console.log('Card clicked:', i); // Debug
                                                     handleCardClick(i);
                                                 }
                                             }}
-                                            disabled={!canClick}
                                             initial={false}
                                             animate={{ rotateY: isRevealed ? 180 : 0 }}
                                             transition={{ type: "spring", stiffness: 260, damping: 20 }}
