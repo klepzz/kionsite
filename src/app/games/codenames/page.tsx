@@ -818,7 +818,7 @@ export default function CodenamesPage() {
                 </div>
 
                 {/* Status Message / Title */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center z-50">
+                <div className="absolute left-1/2 -translate-x-1/2 top-4 text-center z-50 pointer-events-none">
                     <h1 className="font-cinzel font-black text-3xl md:text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] tracking-wide uppercase">
                         {gameState.winner ? (
                             // Winner text moved to overlay
@@ -960,7 +960,7 @@ export default function CodenamesPage() {
                         <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/20 rounded-bl-xl" />
                         <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/20 rounded-br-xl" />
 
-                        <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto z-10">
+                        <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto z-40">
                             {gameState.cards.map((card, i) => {
                                 // 3D FLIP ANIMATION LOGIC
                                 // We separate the visual state into 'Front' (Unrevealed/Hint) and 'Back' (Revealed)
