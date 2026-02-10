@@ -1216,3 +1216,44 @@ export default function CodenamesPage() {
 }
 
 // --- UTILS ---
+
+function TimerDisplay({ endTime }: { endTime: number }) {
+    const [timeLeft, setTimeLeft] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = Date.now();
+            const diff = Math.ceil((endTime - now) / 1000);
+            setTimeLeft(Math.max(0, diff));
+        }, 500); // Check twice a second for smoothness update
+
+        // Initial set
+        setTimeLeft(Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
+
+        return () => clearInterval(interval);
+    }, [endTime]);
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const formatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    // Color logic: < 10s red, < 30s yellow, else white
+    let colorClass = "text-white";
+    if (timeLeft <= 10) colorClass = "text-red-500 animate-pulse";
+    else if (timeLeft <= 30) colorClass = "text-yellow-400";
+
+    return (
+        <div className={`font-mono text-xl md:text-2xl font-bold tracking-widest bg-black/50 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 ${colorClass}`}>
+            {formatted}
+        </div>
+    );
+}
+
+function shuffleWords(array: any[]) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
