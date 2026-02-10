@@ -940,94 +940,128 @@ export default function CodenamesPage() {
 
                         <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-4 content-stretch h-full w-full max-w-[1400px] mx-auto z-10">
                             {gameState.cards.map((card, i) => {
-                                // 3D TILE STYLE
-                                // 3D / NEON TILE STYLE
-                                const isRevealed = card.revealed || spymasterView;
+                                // 3D FLIP ANIMATION LOGIC
+                                // We separate the visual state into 'Front' (Unrevealed/Hint) and 'Back' (Revealed)
 
-                                // Base (Unrevealed) - High Tech Metallic/Slate
-                                let bgStyle = "bg-slate-800/80";
-                                let borderStyle = "border border-white/10 hover:border-white/30";
-                                let textStyle = "text-slate-300 group-hover:text-white";
-                                let shadowStyle = "shadow-lg";
-                                let opacityStyle = "opacity-100";
-                                let glowEffect = "";
+                                const isRevealed = card.revealed; // True means flip to back
 
-                                if (isRevealed) {
-                                    if (!card.revealed) {
-                                        // Spymaster View of Unrevealed Cards - STRONGER HINT
-                                        if (card.type === 'SETEJELER') {
-                                            bgStyle = "bg-orange-950/40";
-                                            borderStyle = "border-2 border-orange-500";
-                                            textStyle = "text-orange-100 font-bold";
-                                            glowEffect = "shadow-[0_0_15px_rgba(249,115,22,0.15)]";
-                                        } else if (card.type === 'AVEKETLER') {
-                                            bgStyle = "bg-cyan-950/40";
-                                            borderStyle = "border-2 border-cyan-400";
-                                            textStyle = "text-cyan-100 font-bold";
-                                            glowEffect = "shadow-[0_0_15px_rgba(34,211,238,0.15)]";
-                                        } else if (card.type === 'ASSASSIN') {
-                                            borderStyle = "border-2 border-slate-700 dashed";
-                                            textStyle = "text-slate-400";
-                                            bgStyle = "bg-black/90";
-                                        }
-                                        opacityStyle = "opacity-90"; // Reduced transparency for better visibility
-                                    } else {
-                                        // Fully Revealed - BOLD & NEON
-                                        if (card.type === 'SETEJELER') {
-                                            bgStyle = "bg-orange-600/90"; // Much stronger fill
-                                            borderStyle = "border-2 border-orange-400";
-                                            textStyle = "text-white font-black drop-shadow-md";
-                                            glowEffect = "shadow-[0_0_30px_rgba(249,115,22,0.6)]";
-                                        } else if (card.type === 'AVEKETLER') {
-                                            bgStyle = "bg-cyan-600/90"; // Much stronger fill
-                                            borderStyle = "border-2 border-cyan-300";
-                                            textStyle = "text-white font-black drop-shadow-md";
-                                            glowEffect = "shadow-[0_0_30px_rgba(34,211,238,0.6)]";
-                                        } else if (card.type === 'ASSASSIN') {
-                                            bgStyle = "bg-black";
-                                            borderStyle = "border-4 border-red-600 double";
-                                            textStyle = "text-red-500 line-through decoration-4";
-                                            glowEffect = "shadow-[0_0_50px_rgba(220,38,38,0.5)]";
-                                        } else if (card.type === 'NEUTRAL') {
-                                            bgStyle = "bg-slate-700/80";
-                                            borderStyle = "border-2 border-[#d4af37]/30";
-                                            textStyle = "text-[#d4af37]/80";
-                                            glowEffect = "shadow-none";
-                                        }
+                                // --- FRONT FACE STYLES (Unrevealed State) ---
+                                // Operatives see Slate. Spymasters see the Strong Hint.
+                                let frontBg = "bg-slate-800/80";
+                                let frontBorder = "border border-white/10";
+                                let frontText = "text-slate-300";
+                                let frontGlow = "";
+
+                                if (!card.revealed && spymasterView) {
+                                    // Spymaster "Hint" View on Front Face
+                                    if (card.type === 'SETEJELER') {
+                                        frontBg = "bg-orange-950/40";
+                                        frontBorder = "border-2 border-orange-500";
+                                        frontText = "text-orange-100 font-bold";
+                                        frontGlow = "shadow-[0_0_15px_rgba(249,115,22,0.15)]";
+                                    } else if (card.type === 'AVEKETLER') {
+                                        frontBg = "bg-cyan-950/40";
+                                        frontBorder = "border-2 border-cyan-400";
+                                        frontText = "text-cyan-100 font-bold";
+                                        frontGlow = "shadow-[0_0_15px_rgba(34,211,238,0.15)]";
+                                    } else if (card.type === 'ASSASSIN') {
+                                        frontBg = "bg-black/90";
+                                        frontBorder = "border-2 border-slate-700 dashed";
+                                        frontText = "text-slate-400";
+                                    } else if (card.type === 'NEUTRAL') {
+                                        // Optional: Hint for neutral too?
+                                        frontBorder = "border border-[#d4af37]/30";
                                     }
+                                }
+
+                                // --- BACK FACE STYLES (Revealed State) ---
+                                // What everyone sees when the card is actually flipped/revealed
+                                let backBg = "bg-slate-800";
+                                let backBorder = "border border-slate-700";
+                                let backText = "text-slate-400";
+                                let backGlow = "";
+
+                                if (card.type === 'SETEJELER') {
+                                    backBg = "bg-orange-600/90";
+                                    backBorder = "border-2 border-orange-400";
+                                    backText = "text-white font-black drop-shadow-md";
+                                    backGlow = "shadow-[0_0_30px_rgba(249,115,22,0.6)]";
+                                } else if (card.type === 'AVEKETLER') {
+                                    backBg = "bg-cyan-600/90";
+                                    backBorder = "border-2 border-cyan-300";
+                                    backText = "text-white font-black drop-shadow-md";
+                                    backGlow = "shadow-[0_0_30px_rgba(34,211,238,0.6)]";
+                                } else if (card.type === 'ASSASSIN') {
+                                    backBg = "bg-black";
+                                    backBorder = "border-4 border-red-600 double";
+                                    backText = "text-red-500 line-through decoration-4";
+                                    backGlow = "shadow-[0_0_50px_rgba(220,38,38,0.5)]";
+                                } else if (card.type === 'NEUTRAL') {
+                                    backBg = "bg-slate-700/80";
+                                    backBorder = "border-2 border-[#d4af37]/30";
+                                    backText = "text-[#d4af37]/80";
                                 }
 
                                 const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
 
                                 return (
-                                    <motion.button
-                                        key={card.id}
-                                        layoutId={`card-${card.id}`}
-                                        onClick={() => canClick && handleCardClick(i)}
-                                        disabled={!canClick}
-                                        className={`
-                                            relative h-full w-full rounded-xl flex items-center justify-center p-2 
-                                            text-center font-sans text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-widest
-                                            transition-all duration-300 select-none group overflow-hidden
-                                            ${bgStyle} ${borderStyle} ${textStyle} ${shadowStyle} ${opacityStyle} ${glowEffect}
-                                            ${canClick ? 'cursor-pointer hover:scale-[1.02] hover:bg-slate-700/80 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'cursor-default'}
-                                        `}
-                                    >
-                                        {/* Scanline Effect */}
-                                        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20" />
-
-                                        {/* Tech Corners for Unrevealed */}
-                                        {!card.revealed && (
-                                            <>
+                                    <div key={card.id} className="relative h-full w-full perspective-1000 group">
+                                        <motion.button
+                                            layoutId={`card-${card.id}`}
+                                            onClick={() => canClick && handleCardClick(i)}
+                                            disabled={!canClick}
+                                            initial={false}
+                                            animate={{ rotateY: isRevealed ? 180 : 0 }}
+                                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                            className={`
+                                                relative w-full h-full transform-style-3d transition-transform duration-500
+                                                ${canClick ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-default'}
+                                            `}
+                                            style={{ transformStyle: 'preserve-3d' }}
+                                        >
+                                            {/* --- FRONT FACE (Unrevealed) --- */}
+                                            <div
+                                                className={`
+                                                    absolute inset-0 backface-hidden rounded-xl flex items-center justify-center p-2
+                                                    text-center font-sans text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-widest
+                                                    select-none overflow-hidden
+                                                    ${frontBg} ${frontBorder} ${frontText} ${frontGlow}
+                                                    ${canClick ? 'group-hover:bg-slate-700/80 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]' : ''}
+                                                `}
+                                                style={{ backfaceVisibility: 'hidden' }}
+                                            >
+                                                {/* Scanline & Deco */}
+                                                <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20" />
                                                 <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/20" />
                                                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/20" />
-                                            </>
-                                        )}
 
-                                        <span className={`relative block w-full break-words leading-tight z-10 font-bold ${canClick ? 'group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}>
-                                            {card.word}
-                                        </span>
-                                    </motion.button>
+                                                <span className={`relative block w-full break-words leading-tight z-10 font-bold ${canClick ? 'group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}>
+                                                    {card.word}
+                                                </span>
+                                            </div>
+
+                                            {/* --- BACK FACE (Revealed) --- */}
+                                            <div
+                                                className={`
+                                                    absolute inset-0 backface-hidden rounded-xl flex items-center justify-center p-2
+                                                    text-center font-sans text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-widest
+                                                    select-none overflow-hidden
+                                                    ${backBg} ${backBorder} ${backText} ${backGlow}
+                                                `}
+                                                style={{
+                                                    backfaceVisibility: 'hidden',
+                                                    transform: 'rotateY(180deg)'
+                                                }}
+                                            >
+                                                {/* Revealead Deco */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+
+                                                <span className="relative block w-full break-words leading-tight z-10 font-bold">
+                                                    {card.word}
+                                                </span>
+                                            </div>
+                                        </motion.button>
+                                    </div>
                                 );
                             })}
                         </div>
