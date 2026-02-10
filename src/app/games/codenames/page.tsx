@@ -111,8 +111,6 @@ export default function CodenamesPage() {
     const searchParams = useSearchParams();
     const gameIdParam = searchParams.get('gameId');
 
-    const [debugInfo, setDebugInfo] = useState<string>('Ready'); // DEBUG STATE
-
     // --- BAŞLANGIÇ (INIT) ---
 
     useEffect(() => {
@@ -500,33 +498,23 @@ export default function CodenamesPage() {
     };
 
     const handleCardClick = (index: number) => {
-        console.log('handleCardClick triggered for index:', index); // DEBUG
+        if (gameState.phase !== 'PLAYING') return;
+        if (gameState.winner) return;
 
-        let failReason = '';
-        if (gameState.phase !== 'PLAYING') failReason = `Game Phase: ${gameState.phase}`;
-        else if (gameState.winner) failReason = 'Game Over';
-        else {
-            const player = gameState.players.find(p => p.id === myPeerId);
-            if (!player) failReason = 'Player Not Found';
-            else if (player.team !== gameState.currentTurn) failReason = `Not My Turn (My:${player.team}, Cur:${gameState.currentTurn})`;
-            else if (player.role !== 'OPERATIVE') failReason = `Role: ${player.role} (Must be OPERATIVE)`;
-            else if (gameState.turnPhase !== 'GUESS') failReason = `Turn Phase: ${gameState.turnPhase} (Must be GUESS)`;
-        }
+        // Sadece sırası gelen takımdaki oyuncular tıklayabilir mi?
+        // Oyunun akıcılığı için herkes tıklayabilsin ama host'ta kontrol edilsin.
+        // Daha sıkı kural: Sadece kendi turunda tıklayabilirsin.
+        const myPlayer = gameState.players.find(p => p.id === myPeerId);
+        if (!myPlayer) return;
 
-        if (failReason) {
-            const msg = `IGNORED: ${failReason}`;
-            console.log(msg);
-            setDebugInfo(msg);
+        if (myPlayer.team !== gameState.currentTurn) {
+            // Opsiyonel: Uyarı verilebilir "Sıra sizde değil"
             return;
         }
 
-        setDebugInfo(`SUCCESS: Revealing Card ${index}`);
-
         if (isHost) {
-            console.log('Processing reveal as Host'); // DEBUG
             processCardReveal(index);
         } else {
-            console.log('Sending REVEAL_CARD to Host'); // DEBUG
             sendToHost('REVEAL_CARD', { index });
         }
     };
@@ -1030,10 +1018,7 @@ export default function CodenamesPage() {
                                         className={`relative h-full w-full perspective-1000 group ${canClick ? 'cursor-pointer' : ''}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            console.log('Parent Div onClick fired for index:', i, 'canClick:', canClick); // DEBUG
-                                            if (!canClick) {
-                                                setDebugInfo(`Card Click Prevented: canClick=FALSE. Rev:${card.revealed} Win:${!!gameState.winner} Turn:${isMyTurn} Role:${myPlayer?.role} Phase:${gameState.turnPhase}`);
-                                            } else {
+                                            if (canClick) {
                                                 handleCardClick(i);
                                             }
                                         }}
@@ -1133,26 +1118,6 @@ export default function CodenamesPage() {
                         </div>
                     </div>
 
-                    {/* MINIMIZED LOG PANEL */}
-                    <div className="h-48 bg-slate-900/80 rounded-xl border border-white/10 overflow-hidden flex flex-col shadow-2xl">
-                        <div className="p-2 bg-black/40 border-b border-white/5 flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            <h3 className="font-mono text-slate-400 text-[10px] uppercase">GÖREV KAYDI</h3>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-2 space-y-2 font-mono text-[10px]">
-                            {gameState.logs.map(log => (
-                                <div key={log.id} className={`opacity-80 ${log.type === 'SUCCESS' ? 'text-green-400' :
-                                    log.type === 'DANGER' ? 'text-red-400' :
-                                        log.type === 'WARNING' ? 'text-yellow-400' :
-                                            'text-slate-300'
-                                    }`}>
-                                    <span className="opacity-50 mr-2">[{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]</span>
-                                    {log.text}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* GAME OVER OVERLAY (MOVED HERE FOR Z-INDEX FIX) */}
                     <AnimatePresence>
                         {gameState.winner && (
@@ -1202,21 +1167,6 @@ export default function CodenamesPage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    {/* DEBUG PANEL */}
-                    <div className="fixed bottom-4 right-4 z-[99999] bg-black/90 text-green-400 p-4 font-mono text-[10px] md:text-xs rounded border border-green-500 shadow-2xl pointer-events-none opacity-80 backdrop-blur-md">
-                        <p className="font-bold border-b border-green-500/50 mb-1">-- DIAGNOSTICS --</p>
-                        <div className="grid grid-cols-2 gap-x-4">
-                            <p>Role: <span className="text-white">{myPlayer?.role || 'N/A'}</span></p>
-                            <p>Team: <span className="text-white">{myPlayer?.team || 'N/A'}</span></p>
-                            <p>Turn: <span className="text-white">{gameState.currentTurn}</span></p>
-                            <p>Phase: <span className="text-white">{gameState.turnPhase}</span></p>
-                            <p>Host: <span className="text-white">{isHost ? 'YES' : 'NO'}</span></p>
-                        </div>
-                        <div className="mt-2 border-t border-green-500/30 pt-1">
-                            <p className="font-bold text-yellow-400">{debugInfo}</p>
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
