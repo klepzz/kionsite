@@ -498,20 +498,37 @@ export default function CodenamesPage() {
     };
 
     const handleCardClick = (index: number) => {
-        if (gameState.phase !== 'PLAYING' || gameState.winner) return;
+        console.log('handleCardClick triggered for index:', index); // DEBUG
+
+        if (gameState.phase !== 'PLAYING') {
+            console.log('Click ignored: Game phase is', gameState.phase); // DEBUG
+            return;
+        }
+        if (gameState.winner) {
+            console.log('Click ignored: Game has a winner'); // DEBUG
+            return;
+        }
 
         // Sadece sırası gelen takımdaki oyuncular tıklayabilir mi?
         // Oyunun akıcılığı için herkes tıklayabilsin ama host'ta kontrol edilsin.
         // Daha sıkı kural: Sadece kendi turunda tıklayabilirsin.
         const myPlayer = gameState.players.find(p => p.id === myPeerId);
-        if (!myPlayer || myPlayer.team !== gameState.currentTurn) {
+        if (!myPlayer) {
+            console.log('Click ignored: Player not found'); // DEBUG
+            return;
+        }
+
+        if (myPlayer.team !== gameState.currentTurn) {
+            console.log(`Click ignored: Not my team's turn. My: ${myPlayer.team}, Current: ${gameState.currentTurn}`); // DEBUG
             // Opsiyonel: Uyarı verilebilir "Sıra sizde değil"
             return;
         }
 
         if (isHost) {
+            console.log('Processing reveal as Host'); // DEBUG
             processCardReveal(index);
         } else {
+            console.log('Sending REVEAL_CARD to Host'); // DEBUG
             sendToHost('REVEAL_CARD', { index });
         }
     };
