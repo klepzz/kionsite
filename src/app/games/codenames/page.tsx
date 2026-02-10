@@ -1075,7 +1075,7 @@ export default function CodenamesPage() {
                                     backText = "text-[#d4af37]/80";
                                 }
 
-                                const canClick = !card.revealed && !gameState.winner && isMyTurn && gameState.turnPhase === 'GUESS';
+                                const canClick = !card.revealed && (isMyTurn && gameState.turnPhase === 'GUESS' || gameState.winner);
 
                                 return (
                                     <div
