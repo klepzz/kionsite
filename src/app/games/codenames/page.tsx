@@ -1027,22 +1027,25 @@ export default function CodenamesPage() {
                                 const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
 
                                 return (
-                                    <div key={card.id} className="relative h-full w-full perspective-1000 group">
+                                    <div
+                                        key={card.id}
+                                        className={`relative h-full w-full perspective-1000 group ${canClick ? 'cursor-pointer' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            console.log('Parent Div onClick fired for index:', i, 'canClick:', canClick); // DEBUG
+                                            if (canClick) {
+                                                handleCardClick(i);
+                                            }
+                                        }}
+                                    >
                                         <motion.div
                                             layoutId={`card-${card.id}`}
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Prevent bubbling
-                                                console.log('Card onClick fired for index:', i, 'canClick:', canClick); // DEBUG
-                                                if (canClick) {
-                                                    handleCardClick(i);
-                                                }
-                                            }}
                                             initial={false}
                                             animate={{ rotateY: isRevealed ? 180 : 0 }}
                                             transition={{ type: "spring", stiffness: 260, damping: 20 }}
                                             className={`
                                                 relative w-full h-full transform-style-3d transition-transform duration-500
-                                                ${canClick ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-default'}
+                                                ${canClick ? 'group-hover:scale-[1.02]' : ''}
                                             `}
                                             style={{ transformStyle: 'preserve-3d' }}
                                         >
