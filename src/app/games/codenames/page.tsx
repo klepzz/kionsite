@@ -821,26 +821,29 @@ export default function CodenamesPage() {
                             transition={{ duration: 1 }}
                             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
                         >
-                            {/* 1. Image in Foreground */}
+                            {/* 1. Image in Foreground - Appear, Stay, Disappear */}
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 3, ease: "easeOut" }} // Slow entrance
-                                className="relative w-full max-w-5xl h-[60vh] flex items-center justify-center p-4 z-10"
+                                animate={{ opacity: [0, 1, 1, 0], scale: 1 }}
+                                transition={{
+                                    opacity: { duration: 4, times: [0, 0.2, 0.8, 1], ease: "easeInOut" },
+                                    scale: { duration: 4, ease: "easeOut" }
+                                }}
+                                className="absolute inset-0 flex items-center justify-center p-4 z-30 pointer-events-none"
                             >
                                 <img
                                     src="/images/game_over.jpg"
                                     alt="Game Over"
-                                    className="w-full h-full object-contain drop-shadow-2xl rounded-lg"
+                                    className="w-full h-full max-h-[80vh] object-contain drop-shadow-2xl rounded-lg"
                                 />
                             </motion.div>
 
-                            {/* 2. Controls (Text & Button) - Appear after delay */}
+                            {/* 2. Controls (Text & Button) - Appear after image fades */}
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 4, duration: 1 }} // Wait for image to settle
-                                className="relative z-20 flex flex-col items-center gap-6 mt-8 p-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 3.5, duration: 1 }} // Start appearing while image fades out
+                                className="relative z-20 flex flex-col items-center gap-6 p-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10"
                             >
                                 <h1 className={`font-cinzel font-black text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b ${gameState.winner === 'SETEJELER' ? 'from-orange-400 to-red-600 drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]' : 'from-cyan-400 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.8)]'} uppercase tracking-widest text-center`}>
                                     {gameState.teamNames[gameState.winner]}
@@ -850,7 +853,7 @@ export default function CodenamesPage() {
 
                                 <button
                                     onClick={() => window.location.reload()}
-                                    className="px-12 py-4 bg-white hover:bg-slate-200 text-black font-bold tracking-widest transition-all hover:scale-105 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                                    className="px-12 py-4 bg-white hover:bg-slate-200 text-black font-bold tracking-widest transition-all hover:scale-105 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] cursor-pointer"
                                 >
                                     TEKRAR OYNA
                                 </button>
