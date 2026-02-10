@@ -590,6 +590,7 @@ export default function CodenamesPage() {
     const setejelerPlayers = gameState.players.filter(p => p.team === 'SETEJELER');
     const aveketlerPlayers = gameState.players.filter(p => p.team === 'AVEKETLER');
 
+
     // --- LOBBY UI ---
 
     if (gameState.phase === 'LOBBY') {
