@@ -1052,7 +1052,12 @@ export default function CodenamesPage() {
                                     <div key={card.id} className="relative h-full w-full perspective-1000 group">
                                         <motion.button
                                             layoutId={`card-${card.id}`}
-                                            onClick={() => canClick && handleCardClick(i)}
+                                            onClick={() => {
+                                                if (canClick) {
+                                                    // console.log('Card clicked:', i); // Debug
+                                                    handleCardClick(i);
+                                                }
+                                            }}
                                             disabled={!canClick}
                                             initial={false}
                                             animate={{ rotateY: isRevealed ? 180 : 0 }}
