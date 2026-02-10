@@ -1075,7 +1075,7 @@ export default function CodenamesPage() {
                                     backText = "text-[#d4af37]/80";
                                 }
 
-                                const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
+                                const canClick = !card.revealed && !gameState.winner && isMyTurn && gameState.turnPhase === 'GUESS';
 
                                 return (
                                     <div
@@ -1083,6 +1083,17 @@ export default function CodenamesPage() {
                                         className={`relative h-full w-full perspective-1000 group ${canClick ? 'cursor-pointer' : ''}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
+                                            console.log('Card clicked!', {
+                                                cardIndex: i,
+                                                canClick,
+                                                revealed: card.revealed,
+                                                winner: gameState.winner,
+                                                isMyTurn,
+                                                myRole: myPlayer?.role,
+                                                turnPhase: gameState.turnPhase,
+                                                currentTurn: gameState.currentTurn,
+                                                myTeam: myPlayer?.team
+                                            });
                                             if (canClick) {
                                                 handleCardClick(i);
                                             }
