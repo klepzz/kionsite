@@ -28,7 +28,6 @@ interface Card {
     word: string;
     type: CardType;
     revealed: boolean;
-    neutralImageIndex?: number; // 1, 2, or 3
 }
 
 interface GameLog {
@@ -319,21 +318,12 @@ export default function CodenamesPage() {
         const shuffledTypes = shuffleWords(types as string[]) as CardType[];
 
         // 4. Kartları oluştur
-        const newCards: Card[] = selectedWords.map((word, i) => {
-            const type = shuffledTypes[i];
-            let neutralImageIndex: number | undefined;
-            if (type === 'NEUTRAL') {
-                neutralImageIndex = Math.floor(Math.random() * 3) + 1; // 1, 2, or 3
-            }
-
-            return {
-                id: i,
-                word,
-                type,
-                revealed: false,
-                neutralImageIndex
-            };
-        });
+        const newCards: Card[] = selectedWords.map((word, i) => ({
+            id: i,
+            word,
+            type: shuffledTypes[i],
+            revealed: false
+        }));
 
         const newState: GameState = {
             ...gameState,
@@ -1009,7 +999,7 @@ export default function CodenamesPage() {
                                 } else if (card.type === 'NEUTRAL') {
                                     backBg = "bg-slate-700/80";
                                     backBorder = "border-2 border-[#d4af37]/30";
-                                    backText = "text-[#d4af37]/90 drop-shadow-md"; // Increased contrast
+                                    backText = "text-[#d4af37]/80";
                                 }
 
                                 const canClick = !card.revealed && !gameState.winner && isMyTurn && myPlayer?.role === 'OPERATIVE' && gameState.turnPhase === 'GUESS';
@@ -1057,19 +1047,12 @@ export default function CodenamesPage() {
                                                     text-center font-sans text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-widest
                                                     select-none overflow-hidden
                                                     ${backBg} ${backBorder} ${backText} ${backGlow}
-                                                    ${card.type === 'NEUTRAL' && card.neutralImageIndex ? 'bg-cover bg-center' : ''}
                                                 `}
                                                 style={{
                                                     backfaceVisibility: 'hidden',
-                                                    transform: 'rotateY(180deg)',
-                                                    backgroundImage: card.type === 'NEUTRAL' && card.neutralImageIndex ? `url(/images/neutral/${card.neutralImageIndex}.jpg)` : undefined
+                                                    transform: 'rotateY(180deg)'
                                                 }}
                                             >
-                                                {/* Image Overlay for Contrast */}
-                                                {card.type === 'NEUTRAL' && card.neutralImageIndex && (
-                                                    <div className="absolute inset-0 bg-black/60 pointer-events-none" />
-                                                )}
-
                                                 {/* Revealead Deco */}
                                                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
