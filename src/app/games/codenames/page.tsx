@@ -1118,7 +1118,7 @@ export default function CodenamesPage() {
                                                     {card.word}
                                                 </span>
                                             </div>
-                                        </motion.button>
+                                        </motion.div>
                                     </div>
                                 );
                             })}
