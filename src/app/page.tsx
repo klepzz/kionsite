@@ -1,6 +1,11 @@
+"use client";
+
 import MysterySpin from "@/components/MysterySpin";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
       {/* Background ambient orbs */}
@@ -10,10 +15,10 @@ export default function Home() {
       <div className="relative z-10 w-full px-4 flex flex-col items-center">
         <header className="mb-12 text-center">
           <h1 className="text-sm md:text-base tracking-[0.4em] uppercase text-white/40 mb-3 font-medium">
-            Daily Objective
+            {t("general.dailyObjective")}
           </h1>
           <p className="text-white/20 text-xs md:text-sm font-light">
-            A mystery challenge awaits.
+            {t("general.subtitle")}
           </p>
         </header>
 

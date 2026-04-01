@@ -21,6 +21,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     useEffect(() => {
         document.documentElement.lang = "en";
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                .register('/sw.js')
+                .then(reg => console.log('SW Registered', reg))
+                .catch(err => console.error('SW Registration failed', err));
+        }
     }, []);
 
     const setLanguage = (lang: Language) => {
