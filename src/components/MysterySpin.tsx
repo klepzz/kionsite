@@ -104,21 +104,10 @@ export default function MysterySpin() {
     if (savedState) {
       try {
         const state = JSON.parse(savedState);
-        const todayDate = new Date().toISOString().split('T')[0];
         
         // If we have a streak, load it
         if (state.streak) setStreak(state.streak);
 
-        if (state.date === todayDate) {
-          // Task already assigned today
-          if (state.task) {
-            setResult(state.task);
-            setCategory(state.task.category);
-          }
-          if (state.completed) {
-            setHasCompleted(true);
-          }
-        }
       } catch (e) { console.error(e) }
     }
   }, [t]);
@@ -131,8 +120,10 @@ export default function MysterySpin() {
   };
 
   const spinWheel = () => {
-    if (spinning || result) return; // Prevent spinning if already spun today
+    if (spinning) return; // Prevent spinning if already spinning
     setSpinning(true);
+    setResult(null);
+    setHasCompleted(false);
 
     const filteredTasks = dailyTasks.filter(t => t.category === category);
     let counter = 0;
@@ -150,15 +141,7 @@ export default function MysterySpin() {
         setSpinning(false);
         playSuccessChime();
 
-        // Save daily task choice
-        const todayDate = new Date().toISOString().split('T')[0];
-        const currentState = JSON.parse(localStorage.getItem("kion-daily-task") || "{}");
-        localStorage.setItem("kion-daily-task", JSON.stringify({
-          ...currentState,
-          date: todayDate,
-          task: finalTask,
-          completed: false
-        }));
+        // Note: Task choice is not saved to allow unlimited spins
       }
     }, 120);
   };
@@ -181,17 +164,18 @@ export default function MysterySpin() {
     // Simple streak logic
     let newStreak = streak;
     if (currentState.lastCompletedDate) {
-      const lastDate = new Date(currentState.lastCompletedDate);
-      const today = new Date(todayDate);
-      const diffTime = Math.abs(today.getTime() - lastDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      
-      if (diffDays === 1) {
-        newStreak += 1;
-      } else if (diffDays > 1) {
-        newStreak = 1; // broken streak
+      if (currentState.lastCompletedDate !== todayDate) {
+        const lastDate = new Date(currentState.lastCompletedDate);
+        const today = new Date(todayDate);
+        const diffTime = Math.abs(today.getTime() - lastDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else if (diffDays > 1) {
+          newStreak = 1; // broken streak
+        }
       }
-      // if 0, they already completed today, streak remains
     } else {
       newStreak = 1;
     }
@@ -200,8 +184,6 @@ export default function MysterySpin() {
     
     localStorage.setItem("kion-daily-task", JSON.stringify({
       ...currentState,
-      date: todayDate,
-      completed: true,
       lastCompletedDate: todayDate,
       streak: newStreak
     }));
@@ -254,8 +236,8 @@ export default function MysterySpin() {
 
       {showConfetti && <ConfettiExplosion />}
 
-      {/* Category Selection (Disabled if already spun) */}
-      <div className={`flex gap-2 sm:gap-4 mb-10 z-20 ${result ? 'opacity-50 pointer-events-none' : ''}`}>
+      {/* Category Selection (Always enabled) */}
+      <div className={`flex gap-2 sm:gap-4 mb-10 z-20`}>
         <button 
           onClick={() => {if(!spinning && !result) setCategory("short");}}
           className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'short' ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
@@ -280,10 +262,10 @@ export default function MysterySpin() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`relative w-full aspect-[2/1] sm:aspect-[2.5/1] glass rounded-3xl overflow-hidden flex items-center justify-center glow transition-transform duration-500 ${!result ? "cursor-pointer hover:scale-[1.02] group" : ""}`}
+        className={`relative w-full aspect-[2/1] sm:aspect-[2.5/1] glass rounded-3xl overflow-hidden flex items-center justify-center glow transition-transform duration-500 ${!spinning ? "cursor-pointer hover:scale-[1.02] group" : ""}`}
         onClick={spinWheel}
       >
-        <div className={`absolute inset-0 bg-gradient-to-tr from-violet-600/10 via-transparent to-fuchsia-600/10 pointer-events-none transition-opacity duration-700 ${!result ? "opacity-50 group-hover:opacity-100" : "opacity-100"}`} />
+        <div className={`absolute inset-0 bg-gradient-to-tr from-violet-600/10 via-transparent to-fuchsia-600/10 pointer-events-none transition-opacity duration-700 ${!spinning ? "opacity-50 group-hover:opacity-100" : "opacity-100"}`} />
         
         <AnimatePresence mode="wait">
           {!result && !spinning && (
