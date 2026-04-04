@@ -86,7 +86,7 @@ export default function MysterySpin() {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Task | null>(null);
   const [displayText, setDisplayText] = useState("");
-  const [category, setCategory] = useState<TaskCategory>("chill");
+  const [category, setCategory] = useState<TaskCategory>("short");
   const [copied, setCopied] = useState(false);
   
   // Gamification state
@@ -257,22 +257,22 @@ export default function MysterySpin() {
       {/* Category Selection (Disabled if already spun) */}
       <div className={`flex gap-2 sm:gap-4 mb-10 z-20 ${result ? 'opacity-50 pointer-events-none' : ''}`}>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("chill");}}
-          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'chill' ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+          onClick={() => {if(!spinning && !result) setCategory("short");}}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'short' ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
-          <Coffee className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.chill")}</span>
+          <Zap className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.short")}</span>
         </button>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("active");}}
-          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'active' ? 'bg-rose-500/20 border-rose-500/50 text-rose-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+          onClick={() => {if(!spinning && !result) setCategory("medium");}}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'medium' ? 'bg-rose-500/20 border-rose-500/50 text-rose-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
-          <Zap className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.active")}</span>
+          <Coffee className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.medium")}</span>
         </button>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("focus");}}
-          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'focus' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+          onClick={() => {if(!spinning && !result) setCategory("long");}}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'long' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
-          <Brain className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.focus")}</span>
+          <Brain className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.long")}</span>
         </button>
       </div>
 
