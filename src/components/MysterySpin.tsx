@@ -239,19 +239,19 @@ export default function MysterySpin() {
       {/* Category Selection (Always enabled) */}
       <div className={`flex gap-2 sm:gap-4 mb-10 z-20`}>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("short");}}
+          onClick={() => {if(!spinning) setCategory("short");}}
           className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'short' ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
           <Zap className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.short")}</span>
         </button>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("medium");}}
+          onClick={() => {if(!spinning) setCategory("medium");}}
           className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'medium' ? 'bg-rose-500/20 border-rose-500/50 text-rose-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
           <Coffee className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.medium")}</span>
         </button>
         <button 
-          onClick={() => {if(!spinning && !result) setCategory("long");}}
+          onClick={() => {if(!spinning) setCategory("long");}}
           className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full transition-all border ${category === 'long' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
         >
           <Brain className="w-4 h-4" /> <span className="text-sm font-medium tracking-wide">{t("general.long")}</span>
