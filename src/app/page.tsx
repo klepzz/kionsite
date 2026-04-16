@@ -72,7 +72,7 @@ export default function Home() {
             <img 
               src="/burc.jpg" 
               alt="Av. Burç Kara" 
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover object-center"
               onError={(e) => {
                 // Fallback if image doesn't exist yet
                 (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=Burç+Kara&background=0D8ABC&color=fff&size=256";
@@ -89,19 +89,19 @@ export default function Home() {
 
         {/* Title */}
         <h1 
-          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] mt-6 leading-tight"
+          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] mt-2 leading-tight"
           style={{ fontFamily: 'var(--font-outfit)' }}
         >
           SETEJE AVUKAT <br className="hidden sm:block" /> BURÇ KARA'NIN <br /> SÜNNET DÜĞÜNÜ
         </h1>
 
-        <p className="text-blue-200 text-base sm:text-2xl font-medium max-w-2xl mt-2 drop-shadow-md px-4" style={{textShadow: "0px 2px 4px rgba(0,0,0,0.8)"}}>
+        <p className="text-blue-200 text-base sm:text-2xl font-medium max-w-2xl mt-1 drop-shadow-md px-4" style={{textShadow: "0px 2px 4px rgba(0,0,0,0.8)"}}>
           "Biraz kestik biçtik, ama avukat bey artık tam hazır!"
         </p>
 
         {/* Countdown */}
         {isMounted && (
-          <div className="mt-8 relative w-full max-w-4xl mx-auto">
+          <div className="mt-2 relative w-full max-w-4xl mx-auto">
             <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 rounded-3xl blur opacity-30"></div>
             <div className="relative flex gap-2 sm:gap-6 justify-center text-white bg-blue-950/80 backdrop-blur-xl border-2 border-yellow-500/50 p-4 sm:p-10 rounded-3xl shadow-2xl">
               
