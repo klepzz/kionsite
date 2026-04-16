@@ -1,69 +1,92 @@
 "use client";
 
-import MysterySpin from "@/components/MysterySpin";
-import { useLanguage } from "@/context/LanguageContext";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const { t } = useLanguage();
+  const [isMounted, setIsMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    setIsMounted(true);
+    // 18 Nisan 09:00 hedef tarihi (2026 yılı için ayarlandı, geçerli tarihin 16 Nisan 2026 olduğu biliniyor)
+    const targetDate = new Date("2026-04-18T09:00:00+03:00").getTime();
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        clearInterval(interval);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-[#06060f]">
-
-      {/* === Deep background mesh === */}
+      {/* Deep background mesh */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Primary orbs */}
         <div className="orb-1 absolute top-[-10%] left-[-10%] w-[700px] h-[700px] bg-violet-700/12 rounded-full blur-[140px]" />
         <div className="orb-2 absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] bg-fuchsia-700/10 rounded-full blur-[140px]" />
         <div className="orb-3 absolute top-[40%] left-[55%] w-[400px] h-[400px] bg-indigo-600/8 rounded-full blur-[100px]" />
-
-        {/* Subtle noise grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.025]"
           style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
-            `,
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
             backgroundSize: "64px 64px",
           }}
         />
       </div>
 
-      {/* === Content === */}
-      <div className="relative z-10 w-full px-4 flex flex-col items-center">
+      {/* Content */}
+      <div className="relative z-10 w-full px-4 flex flex-col items-center gap-12 text-center mt-[-50px]">
+        {/* Title */}
+        <h1 
+          className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white max-w-4xl leading-tight"
+          style={{ fontFamily: 'var(--font-outfit)', textShadow: "0 0 40px rgba(139,92,246,0.3)" }}
+        >
+          SETEJE AVUKAT BURÇ KARANIN SÜNNET DÜĞÜNÜ
+        </h1>
 
-        {/* Brand mark */}
-        <div className="mb-10 flex flex-col items-center gap-3">
-          {/* Logo badge */}
-          <div className="relative w-14 h-14 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/30 to-fuchsia-600/20 border border-white/10 backdrop-blur-md" />
-            <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: "0 0 30px -8px rgba(139,92,246,0.7)" }} />
-            <span className="relative text-2xl font-bold text-shimmer" style={{ fontFamily: "var(--font-outfit)" }}>K</span>
+        {/* Countdown */}
+        {isMounted && (
+          <div className="flex gap-3 sm:gap-8 justify-center text-white backdrop-blur-md bg-white/5 border border-white/10 p-6 sm:p-10 rounded-3xl" style={{ boxShadow: "0 0 30px -8px rgba(139,92,246,0.2)" }}>
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-3xl sm:text-6xl font-bold text-shimmer w-[2ch] font-mono">{String(timeLeft.days).padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-[0.2em]">Gün</span>
+            </div>
+            <span className="text-3xl sm:text-6xl font-bold text-white/20 mt-[-2px] sm:mt-[-5px]">:</span>
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-3xl sm:text-6xl font-bold text-shimmer w-[2ch] font-mono">{String(timeLeft.hours).padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-[0.2em]">Saat</span>
+            </div>
+            <span className="text-3xl sm:text-6xl font-bold text-white/20 mt-[-2px] sm:mt-[-5px]">:</span>
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-3xl sm:text-6xl font-bold text-shimmer w-[2ch] font-mono">{String(timeLeft.minutes).padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-[0.2em]">Dakika</span>
+            </div>
+            <span className="text-3xl sm:text-6xl font-bold text-white/20 mt-[-2px] sm:mt-[-5px]">:</span>
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-3xl sm:text-6xl font-bold text-shimmer w-[2ch] font-mono">{String(timeLeft.seconds).padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-[0.2em]">Saniye</span>
+            </div>
           </div>
-
-          {/* Site name */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-[11px] tracking-[0.45em] uppercase text-white/30 font-medium">
-              {t("general.dailyObjective")}
-            </span>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-shimmer"
-              style={{ fontFamily: "var(--font-outfit)" }}>
-              Kion
-            </h1>
-            <p className="text-white/30 text-xs sm:text-sm font-light mt-1 tracking-wide">
-              {t("general.subtitle")}
-            </p>
-          </div>
-        </div>
-
-        <MysterySpin />
-
-        {/* Footer */}
-        <footer className="mt-16 mb-8 flex items-center gap-2 text-white/15 text-xs tracking-widest uppercase">
-          <span>kion</span>
-          <span>·</span>
-          <span>make every day count</span>
-        </footer>
+        )}
       </div>
     </main>
   );
