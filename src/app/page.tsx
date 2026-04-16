@@ -95,10 +95,6 @@ export default function Home() {
           SETEJE AVUKAT <br className="hidden sm:block" /> BURÇ KARA'NIN <br /> SÜNNET DÜĞÜNÜ
         </h1>
 
-        <p className="text-blue-200 text-base sm:text-2xl font-medium max-w-2xl mt-1 drop-shadow-md px-4" style={{textShadow: "0px 2px 4px rgba(0,0,0,0.8)"}}>
-          "Biraz kestik biçtik, ama avukat bey artık tam hazır!"
-        </p>
-
         {/* Countdown */}
         {isMounted && (
           <div className="mt-2 relative w-full max-w-4xl mx-auto">
