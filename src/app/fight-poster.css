@@ -1,9 +1,10 @@
-.fight-poster{position:relative;isolation:isolate;min-height:100svh;width:100%;overflow:hidden;background:#08090d}
+.fight-poster{position:relative;isolation:isolate;min-height:100svh;width:100%;overflow:hidden;background:#08090d;display:flex;align-items:flex-end}
 .fight-poster-image{object-fit:cover;object-position:center 42%;z-index:-2}
-.fight-poster-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.65) 22%,rgba(0,0,0,.08) 52%,rgba(0,0,0,.15))}
-.fight-poster-title{margin:0 auto;padding:clamp(24px,4vh,56px) 20px 40px;max-width:1400px;text-align:center;font-weight:900;line-height:1.05;text-shadow:0 3px 18px #000}
+.fight-poster-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.2) 58%,rgba(0,0,0,.9) 100%)}
+.fight-poster-title{margin:0 auto;padding:24px 20px max(24px,env(safe-area-inset-bottom));width:100%;max-width:1400px;text-align:center;font-weight:900;line-height:1.05;text-shadow:0 3px 18px #000}
 .fight-poster-title span{display:block}
-.fight-poster-kicker{color:#f4c65b;font-size:clamp(18px,2.4vw,34px);letter-spacing:.22em}
-.fight-poster-name{color:#fff;font-size:clamp(48px,8vw,112px);letter-spacing:-.035em;margin:6px 0 12px}
-.fight-poster-announcement{color:#fff;font-size:clamp(19px,2.8vw,40px);line-height:1.2;text-wrap:balance}
-@media(max-width:600px){.fight-poster-image{object-position:49% center}.fight-poster-title{padding-top:32px}.fight-poster-shade{background:linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.6) 30%,rgba(0,0,0,.05) 60%)}}
+.fight-poster-kicker{color:#f4c65b;font-size:clamp(16px,1.8vw,26px);letter-spacing:.22em}
+.fight-poster-name{color:#fff;font-size:clamp(36px,5vw,68px);letter-spacing:-.035em;margin:4px 0 8px}
+.fight-poster-announcement{color:#fff;font-size:clamp(16px,2vw,28px);line-height:1.2;text-wrap:balance}
+@media(max-width:600px){.fight-poster-image{object-position:49% center}}
+@media(max-height:500px){.fight-poster-title{padding:12px 20px}.fight-poster-name{font-size:32px;margin:2px 0 4px}.fight-poster-kicker{font-size:14px}.fight-poster-announcement{font-size:16px}}
