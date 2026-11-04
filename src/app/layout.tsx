@@ -7,11 +7,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Kion — Your Daily Challenge Awaits",
-  description: "Discover your daily challenge. Choose how much time you have, reveal a mystery task, and make every day count.",
+  metadataBase: new URL("https://kionsite.vercel.app"),
+  title: "Milli Gurur Burç Kara | Ruhsat Koruma Maçı",
+  description: "Milli gurur Burç Kara ruhsat koruma maçına çıkıyor.",
   openGraph: {
-    title: "Kion — Your Daily Challenge Awaits",
-    description: "Discover your daily challenge. Choose how much time you have and make every day count.",
+    title: "Milli Gurur Burç Kara | Ruhsat Koruma Maçı",
+    description: "Milli gurur Burç Kara ruhsat koruma maçına çıkıyor.",
+    images: ["/burc-ruhsat-maci.png"],
     url: "https://kionsite.vercel.app",
     siteName: "Kion",
   },
@@ -23,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="tr" className="dark">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased selection:bg-violet-500/30`}>
         <LanguageProvider>
           {children}
