@@ -10,8 +10,8 @@ export default function Home() {
         <span className="fight-poster-kicker">MİLLİ GURUR</span>
         <span className="fight-poster-name">BURÇ KARA</span>
         <span className="fight-poster-announcement">
-          RUHSATI ALDIĞININ GÜNÜN AKŞAMI<br />
-          RUHSAT KORUMA MAÇINA CIKIYOR
+          RUHSATINI ALDIĞI GÜNÜN AKŞAMI<br />
+          RUHSAT KORUMA MAÇINA ÇIKIYOR
         </span>
       </h1>
     </main>
