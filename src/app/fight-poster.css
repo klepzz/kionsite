@@ -1,9 +1,13 @@
-.chairman-poster{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#101010;color:#fff;padding:16px 16px max(20px,env(safe-area-inset-bottom));gap:20px}
-.chairman-photo{position:relative;width:min(100%,600px);height:clamp(240px,70svh,760px);flex-shrink:0}
+.chairman-poster{position:relative;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 15% 20%,#84704322,transparent 45%),radial-gradient(ellipse at 90% 75%,#78633d1c,transparent 45%),linear-gradient(135deg,#171a20,#090b10 55%,#17191d);color:#fff;padding:28px 24px max(32px,env(safe-area-inset-bottom));gap:24px}
+.chairman-poster::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.35;background:repeating-linear-gradient(135deg,transparent 0 100px,#d8bc7610 101px,transparent 102px)}
+.chairman-poster::after{content:"";position:absolute;inset:12px;z-index:-1;border:1px solid #d8bc7628;pointer-events:none}
+.chairman-photo{position:relative;width:min(100%,600px);height:clamp(240px,70svh,760px);flex-shrink:0;filter:drop-shadow(0 16px 32px #0009)}
+.chairman-photo::before{content:"";position:absolute;inset:8% 4%;z-index:-1;background:#d5b66d15;filter:blur(50px);border-radius:50%}
 .chairman-photo img{object-fit:contain}
-.chairman-title{margin:0;text-align:center;font-weight:800;line-height:1.15}
+.chairman-title{margin:0;text-align:center;font-weight:800;line-height:1.15;text-shadow:0 2px 16px #0008}
+.chairman-title::before{content:"";display:block;width:72px;height:2px;margin:0 auto 18px;background:linear-gradient(90deg,transparent,#e7c779,transparent)}
 .chairman-title span{display:block}
 .chairman-organization{font-size:clamp(20px,3vw,30px);letter-spacing:.16em;color:#e7c779}
-.chairman-role{font-size:clamp(18px,3vw,28px);margin:8px 0}
+.chairman-role{font-size:clamp(18px,3vw,28px);margin:8px 0;color:#d6d8de}
 .chairman-name{font-size:clamp(32px,5vw,52px);letter-spacing:-.02em}
-@media(max-width:600px){.chairman-poster{padding:12px 12px max(20px,env(safe-area-inset-bottom));gap:18px}.chairman-photo{height:auto;aspect-ratio:563/705;max-height:70svh;width:min(100%,calc(70svh * 563 / 705))}.chairman-role{font-size:clamp(16px,4.5vw,24px)}}
+@media(max-width:600px){.chairman-poster{padding:24px 20px max(28px,env(safe-area-inset-bottom));gap:20px}.chairman-poster::after{inset:8px}.chairman-photo{height:auto;aspect-ratio:563/705;max-height:70svh;width:min(100%,calc(70svh * 563 / 705))}.chairman-role{font-size:clamp(16px,4.5vw,24px)}}
