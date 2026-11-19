@@ -1,17 +1,9 @@
-.fight-poster{position:relative;isolation:isolate;min-height:100svh;width:100%;overflow:hidden;background:#08090d;display:flex;align-items:flex-end}
-.fight-poster-image{object-fit:cover;object-position:center 42%;z-index:-2}
-.fight-poster-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.2) 58%,rgba(0,0,0,.9) 100%)}
-.fight-poster-title{margin:0 auto;padding:24px 20px max(24px,env(safe-area-inset-bottom));width:100%;max-width:1400px;text-align:center;font-weight:900;line-height:1.05;text-shadow:0 3px 18px #000}
-.fight-poster-title span{display:block}
-.fight-poster-kicker{color:#f4c65b;font-size:clamp(16px,1.8vw,26px);letter-spacing:.22em}
-.fight-poster-name{color:#fff;font-size:clamp(36px,5vw,68px);letter-spacing:-.035em;margin:4px 0 8px}
-.fight-poster-announcement{color:#fff;font-size:clamp(16px,2vw,28px);line-height:1.2;text-wrap:balance}
-@media(max-width:600px) and (orientation:portrait){
-  .fight-poster{flex-direction:column;justify-content:center;align-items:center;min-height:100svh}
-  .fight-poster-image{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;aspect-ratio:1448/1086;object-fit:contain;object-position:center;flex-shrink:0;z-index:0}
-  .fight-poster-shade{background:none}
-  .fight-poster-title{position:relative;z-index:1;margin:0;padding:24px 16px max(24px,env(safe-area-inset-bottom));background:linear-gradient(#08090d,#030405)}
-  .fight-poster-name{font-size:clamp(36px,11vw,60px)}
-  .fight-poster-announcement{font-size:clamp(16px,4.5vw,24px)}
-}
-@media(max-height:500px){.fight-poster-title{padding:12px 20px}.fight-poster-name{font-size:32px;margin:2px 0 4px}.fight-poster-kicker{font-size:14px}.fight-poster-announcement{font-size:16px}}
+.chairman-poster{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#101010;color:#fff;padding:16px 16px max(20px,env(safe-area-inset-bottom));gap:20px}
+.chairman-photo{position:relative;width:min(100%,600px);height:clamp(240px,70svh,760px);flex-shrink:0}
+.chairman-photo img{object-fit:contain}
+.chairman-title{margin:0;text-align:center;font-weight:800;line-height:1.15}
+.chairman-title span{display:block}
+.chairman-organization{font-size:clamp(20px,3vw,30px);letter-spacing:.16em;color:#e7c779}
+.chairman-role{font-size:clamp(18px,3vw,28px);margin:8px 0}
+.chairman-name{font-size:clamp(32px,5vw,52px);letter-spacing:-.02em}
+@media(max-width:600px){.chairman-poster{padding:12px 12px max(20px,env(safe-area-inset-bottom));gap:18px}.chairman-photo{height:auto;aspect-ratio:563/705;max-height:70svh;width:min(100%,calc(70svh * 563 / 705))}.chairman-role{font-size:clamp(16px,4.5vw,24px)}}

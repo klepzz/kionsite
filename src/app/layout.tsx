@@ -8,12 +8,12 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kionsite.vercel.app"),
-  title: "Milli Gurur Burç Kara | Ruhsat Koruma Maçı",
-  description: "Milli gurur Burç Kara ruhsat koruma maçına çıkıyor.",
+  title: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara",
+  description: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara.",
   openGraph: {
-    title: "Milli Gurur Burç Kara | Ruhsat Koruma Maçı",
-    description: "Milli gurur Burç Kara ruhsat koruma maçına çıkıyor.",
-    images: ["/burc-ruhsat-maci.png"],
+    title: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara",
+    description: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara.",
+    images: ["/burc-kara-baskan.png"],
     url: "https://kionsite.vercel.app",
     siteName: "Kion",
   },
