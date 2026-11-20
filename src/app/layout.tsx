@@ -7,14 +7,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kionsite.vercel.app"),
-  title: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara",
-  description: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara.",
+  metadataBase: new URL("https://kion.online"),
+  title: "Kion | JPG ve PNG’den PDF’ye",
+  description: "JPG ve PNG görsellerini ücretsiz PDF’ye dönüştür. Dosyaların cihazında kalır; üyelik ve filigran yok.",
   openGraph: {
-    title: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara",
-    description: "Ev Gençleri Silivri İlçe Başkanımız Av. Burç Kara.",
-    images: ["/burc-kara-baskan.png"],
-    url: "https://kionsite.vercel.app",
+    title: "Kion | JPG ve PNG’den PDF’ye",
+    description: "JPG ve PNG görsellerini ücretsiz PDF’ye dönüştür.",
+    url: "https://kion.online",
     siteName: "Kion",
   },
 };
@@ -25,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased selection:bg-violet-500/30`}>
         <LanguageProvider>
           {children}

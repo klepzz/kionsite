@@ -2,13 +2,13 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Daily Spin - Mystery Challenge',
-    short_name: 'Daily Spin',
-    description: 'Your daily mystery task generator.',
+    name: 'Kion - JPG ve PNG PDF Dönüştürücü',
+    short_name: 'Kion',
+    description: 'JPG ve PNG görsellerini PDF dosyasına dönüştür.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#050505',
-    theme_color: '#8B5CF6',
+    background_color: '#f8f9f5',
+    theme_color: '#346b52',
     icons: [
       {
         src: '/icon-192x192.png',
